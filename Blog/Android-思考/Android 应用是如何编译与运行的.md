@@ -1,4 +1,9 @@
-## Android 应用是如何编译与运行的
+---
+title: Android 应用是如何编译与运行的
+date: 2019-08-18 11：11：11
+tags: Android-思考
+---
+
 
 Android Studio 负责如何构建与部署我们的应用。但是你有没有想过当你按下Run按钮时发生了什么？
 

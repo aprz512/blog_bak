@@ -1,4 +1,10 @@
-# Parcelable与Serializable
+
+---
+title: Parcelable与Serializable
+date: 2019-08-18 11：11：11
+tags: Android-思考
+---
+
 
 通常，在Android里面传递数据都是使用的 Intent，而 Intent 里面想要放一个 Java 对象，那这个对象要么实现 Parcelable 要么实现 Serializable 。
 

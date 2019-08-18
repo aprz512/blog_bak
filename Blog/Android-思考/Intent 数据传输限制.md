@@ -1,4 +1,10 @@
-# Intent 数据传输限制
+---
+title: Intent 数据传输限制
+date: 2019-08-18 11：11：11
+tags: Android-思考
+---
+
+
 
 当我们启动一个Activity的时候，这个过程是需要与AMS进行进程之间通信的。
 

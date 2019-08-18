@@ -1,4 +1,9 @@
-# Handler
+---
+title: Handler
+date: 2019-08-18 11：11：11
+tags: Android-知识点
+---
+
 
 ## ThreadLocal 的工作原理
 

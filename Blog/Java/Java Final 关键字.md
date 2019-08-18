@@ -1,4 +1,9 @@
-# Java Final 关键字
+---
+title: Java Final 关键字
+date: 2019-08-18 11：11：11
+tags: Java
+---
+
 
 final 关键字一般会多用于这样的几个地方：
 

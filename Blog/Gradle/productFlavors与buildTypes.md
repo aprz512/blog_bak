@@ -1,4 +1,9 @@
-# productFlavors与buildTypes
+---
+title: productFlavors与buildTypes
+date: 2019-08-18 11：11：11
+tags: Gradle
+---
+
 
 > 之所以会想到要写这个，是发现了很多以前没注意过的东西，记录一下。
 

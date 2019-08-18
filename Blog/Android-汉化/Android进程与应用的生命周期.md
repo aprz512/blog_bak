@@ -1,4 +1,9 @@
-# Android进程与应用的生命周期
+---
+title: Android进程与应用的生命周期
+date: 2019-08-18 11：11：11
+tags: Android-汉化
+---
+
 
 官方文档在[这里](https://developer.android.com/guide/components/activities/process-lifecycle)。
 

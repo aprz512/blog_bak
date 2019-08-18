@@ -1,4 +1,10 @@
-# Window 与 View的动态更改思考
+---
+title: Window 与 View的动态更改思考
+date: 2019-08-18 11：11：11
+tags: Android-思考
+---
+
+
 
 我们创建一个悬浮窗的时候，需要使用 WindowManager 来创建。
 

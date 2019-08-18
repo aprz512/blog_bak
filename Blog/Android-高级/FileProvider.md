@@ -1,4 +1,10 @@
-# FileProvider
+---
+title: FileProvider
+date: 2019-08-18 11：11：11
+tags: Android-高级
+---
+
+
 
 从 Android N（7.0） 开始，将严格执行 StrictMode 模式，也就是说，将对安全做更严格的校验。而从 Android N 开始，将不允许在 App 间，使用 `file://` 的方式，传递一个 File ，否者会抛出 FileUriExposedException 的错误，会直接引发 Crash。只能使用FileProvider 将` file://` 替换为 `content://`。
 

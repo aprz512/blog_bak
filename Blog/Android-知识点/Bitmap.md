@@ -1,4 +1,9 @@
-# Bitmap 完全掌握
+---
+title: Bitmap
+date: 2019-08-18 11：11：11
+tags: Android-知识点
+---
+
 
 记录一下以前看到过的知识点。
 
