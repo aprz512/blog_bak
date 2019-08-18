@@ -1,7 +1,8 @@
 ---
 title: View 的滑动处理（一）
-date: 2019-08-18 11：11：11
+date: 2019-08-19 11：1０：11
 tags: Android-View
+categories: View 的滑动
 ---
 
 
