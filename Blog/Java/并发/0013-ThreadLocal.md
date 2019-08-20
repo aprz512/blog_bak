@@ -121,3 +121,49 @@ InheritableThreadLocal类是ThreadLocal的子类。
 
 ## 需要注意的地方
 
+ThreadLocal 实际上是将要存放的对象放入到了 Thread 的 localValues 变量中.
+
+```java
+    /**
+     * Normal thread local values.
+     */
+    ThreadLocal.Values localValues;
+
+```
+
+
+
+使用 set 方法的时候，是将 ThreadLocal 本身的弱引用做为 key，将要储存的对象做为 value。
+
+```java
+    /**
+     * Sets the value of this variable for the current thread. If set to
+     * {@code null}, the value will be set to null and the underlying entry will
+     * still be present.
+     *
+     * @param value the new value of the variable for the caller thread.
+     */
+    public void set(T value) {
+        Thread currentThread = Thread.currentThread();
+        Values values = values(currentThread);
+        if (values == null) {
+            values = initializeValues(currentThread);
+        }
+        values.put(this, value);
+    }
+```
+
+ 看起来传递的是 this，其实真正put的时候，使用的是 key.reference. 这个 reference 是一个弱引用。
+
+```java
+    /** Weak reference to this thread local instance. */
+    private final Reference<ThreadLocal<T>> reference
+            = new WeakReference<ThreadLocal<T>>(this);
+```
+
+所以，网上多说，会有内存泄露的可能。是因为如果 ThreadLocal 本身如果没有再使用了，而当前线程迟迟不结束的话，会导致 Thread 的 localValues 变量里存的 key 被回收，values 却无法被回收（引用找不到了，但是却存在于 threa 的成员变量里面），但是只要线程结束就好了。
+
+
+
+**所以，使用 ThreadLocal 推荐写成 private static 的**。
+
