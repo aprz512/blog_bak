@@ -7,7 +7,7 @@ categories: 并发
 
 ![](http://ifeve.com/wp-content/uploads/2013/04/keys_and_lock_holding250.jpg)
 
-同步代码块就像一个锁一样，将代码给锁起来，线程需要执行同步块中的代码时需要先获取锁才能执行。
+同步代码块就像一个锁一样，将代码给锁起来，线程需要执行同步块中的代码时需要先获取锁才能执行。一次只能有一个线程获得锁。
 
 Java中的同步块用`synchronized`标记。同步块在Java中是同步在某个对象上。所有同步在同一个对象上的同步块在同时只能被一个线程进入并执行操作。所有其他等待进入该同步块的线程将被阻塞，直到执行该同步块中的线程退出。
 
@@ -143,4 +143,3 @@ public class Example {
 ```
 
 注意这两个线程，**threadA和threadB不再引用同一个counter实例**。CounterA和counterB的add方法同步在他们所属的对象上。调用counterA的add方法将不会阻塞调用counterB的add方法。
-
