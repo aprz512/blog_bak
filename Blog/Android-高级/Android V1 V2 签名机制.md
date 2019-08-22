@@ -50,7 +50,7 @@ tags: Android-高级
 
 ### CERT.SF
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E9%AB%98%E7%BA%A7/%E7%AD%BE%E5%90%8D/03.png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E9%AB%98%E7%BA%A7/%E7%AD%BE%E5%90%8D/04.png?raw=true)
 
 发现这里里面的内容与 MANIFEST.MF 的文件差不多。MANIFEST.MF是对APK中的每个文件进行摘要，那么这个文件里面的条目是什么东西的摘要呢？
 
