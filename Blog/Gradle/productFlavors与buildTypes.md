@@ -8,7 +8,7 @@ tags: Gradle
 >
 > 节操社要祸祸“食戟之灵”了，我TM...口吐芬芳
 
-
+---
 
 
 > 之所以会想到要写这个，是发现了很多以前没注意过的东西，记录一下。
@@ -31,7 +31,7 @@ tags: Gradle
 
 显然用文本编辑器打开，看不出什么，就是所谓的“安全”了。当是这种东西就相当于序列化一个 Java 对象，你看不出什么来，不代表别人看不出来，写一个工具就好了，里面的二进制数据都是有规则的，不然怎么读取里面的东西。
 
-好了，有了这个作为前提，由于我们的包是加固的，所以放在 Java 里面比 AndroidManifest.xml 要安全很多，至少你要懂脱壳（这里不讨论别的了）。于是我就想将地址放在 BuildConfig 里面，减少配置的步骤，我使用一个单独的 gradle 文件配置一下，然后每个 variant 取相应的地址就好了。（虽然后来才发现，需要在base库里面生成才能有用，但是再学习的过程中还是很有收获的。）
+好了，有了这个作为前提，由于我们的包是加固的，所以放在 Java 里面比 AndroidManifest.xml 要安全很多，至少你要懂脱壳（这里不讨论别的了）。于是我就想将地址放在 BuildConfig 里面，减少配置的步骤，我使用一个单独的 gradle 文件配置一下，然后每个 variant 取相应的地址就好了。（虽然后来才发现，需要在base库里面生成才能有用，但是在学习的过程中还是很有收获的。）
 
 比如，我在 urls.gradle 中这样写：
 
@@ -372,4 +372,6 @@ android {
 
 applicationVariants 里面有所有需要打包的变体，我们遍历一下，既可以获取变体对象，然后动态的添加我们想要添加的 buildConfigField。
 
-需要注意的是，我最开始以为 `com.android.build.gradle.api.BaseVariant#getBuildType`返回的是`com.android.build.gradle.internal.dsl.BuildType` ，但是没想到返回的是`com.android.builder.model.BuildType`，不注意就搞错了，`com.android.builder.model.BuildType`里面是无法添加 buildConfigField 的。
+需要注意的是，我最开始以为 `com.android.build.gradle.api.BaseVariant#getBuildType`返回的是`com.android.build.gradle.internal.dsl.BuildType` ，但是没想到返回的是`com.android.builder.model.BuildType`，稍不注意就搞错了。
+
+`com.android.builder.model.BuildType`里面是无法添加 buildConfigField 的。

@@ -38,7 +38,7 @@ tags: Android-高级
 
 
 
-###MANIFEST.MF
+### MANIFEST.MF
 
 该文件中保存的内容其实就是**逐一遍历 APK 中的所有条目**，如果是目录就跳过，如果是一个文件，就用 SHA1（或者 SHA256）消息摘要算法**提取出该文件的摘要然后进行 BASE64 编码**后，作为“SHA1-Digest”属性的值写入到 MANIFEST.MF 文件中的一个块中。该块有一个“Name”属性， 其值就是该文件在 APK 包中的路径。
 
