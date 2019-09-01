@@ -175,7 +175,7 @@ Base class for a fuseable intermediate observer.
 
 现在看 onSubscribe 方法就是反过来，即 observer  “参数持有” CreateEmitter 。
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(41).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_41.png?raw=true)
 
 让我们再次回到 BasicFuseableObserver 类中的 onSubscribe 方法里面：
 

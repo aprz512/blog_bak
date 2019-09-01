@@ -165,7 +165,7 @@ ObservableSource 直接接收了 Observer，嗯，很牛逼，后面我们来分
 
 到这里先上个图，为后面做好心理准备。
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(21).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_21.png?raw=true)
 
 
 
@@ -256,7 +256,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
 
 到了这里，我们再上一个图吧，后面的流程要起飞了。
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(22).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_22.png?raw=true)
 
 
 
@@ -297,7 +297,7 @@ source.subscribe(new ObserveOnObserver<T>(observer, w, delayError, bufferSize));
 
 这个 observer 就是我们自己创建的 observerBatMan，上个图：
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(23).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_23.png?raw=true)
 
 
 
@@ -321,7 +321,7 @@ source.subscribe(new ObserveOnObserver<T>(observer, w, delayError, bufferSize));
 
 上一个图：
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(24).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_24.png?raw=true)
 
 
 
@@ -450,13 +450,13 @@ public interface ObservableSource<T> {
 
 所以，我们可以得到这样的一个图：
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(25).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_25.png?raw=true)
 
 
 
 把这几个类，整合到调用图里面，得到如下图：
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(26).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_26.png?raw=true)
 
 
 
@@ -464,7 +464,7 @@ public interface ObservableSource<T> {
 
 与上一篇一样，我们再来整理一下这个demo的执行流程图，你可以先自行想一下这个图应该是什么样子的。
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(27).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_27.png?raw=true)
 
 
 
@@ -478,6 +478,6 @@ public interface ObservableSource<T> {
 
 在回想一下，其实每次 observerOn 或者 subscribeOn  都创建了一个链条一样的节点，然后在 subscribeActual 将这些节点连接起来：
 
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2(28).png?raw=true)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RxJava2/rxjava2_28.png?raw=true)
 
 好了，这篇文章的东西就差不多了，关于线程剩下的东西，本章中都只是一笔带过，详细的内容，留到下一篇。
