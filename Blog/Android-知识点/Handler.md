@@ -1,6 +1,6 @@
 ---
 title: Handler
-date: 2019-08-18 11：11：11
+date: 2019-09-25
 tags: Android-知识点
 ---
 
@@ -384,6 +384,17 @@ while true {
 简而言之，IdleHandler 是一个接口，就是在looper里面的message暂时处理完了，这个时候会回调这个接口，返回false，那么就会移除它，返回true就会在下次message处理完了的时候继续回调。
 
 IdleHandler 可以用来提升提升性能，主要用在我们希望能够在当前线程消息队列空闲时做些事情（譬如UI线程在显示完成后，如果线程空闲我们就可以提前准备其他内容）的情况下，不过最好不要做耗时操作。
+
+当从消息链中取消息的时候，如果取到的消息还未到执行的时间或者没有取到消息，那么就会触发 IdleHandler （当然前提是你设置了），需要注意的是，这个回调只会执行一次，嗯，意思是如果在 5s 内，都没有消息需要处理，在这 5s 内，只会调用一次，而不会不断的调用。
+
+> android.os.MessageQueue#next
+
+```java
+// Reset the idle handler count to 0 so we do not run them again.
+pendingIdleHandlerCount = 0;
+```
+
+可以看到，调用一次之后，就将 count 设置为 0，下次就不会调用了，直到再次触发 next 方法。
 
 可以看一下[这篇文章](https://blog.csdn.net/tencent_bugly/article/details/78395717)的使用。
 
