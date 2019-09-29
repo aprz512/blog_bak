@@ -1,8 +1,8 @@
 ---
 title: Annotation Processor
 date: 2019-09-10
-tags: Java
-categories: Java-AnnotationProcessor
+tags: Java-AnnotationProcessor
+categories: AnnotationProcessor
 ---
 
 

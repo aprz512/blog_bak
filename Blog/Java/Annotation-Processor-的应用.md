@@ -1,8 +1,8 @@
 ---
 title: Annotation Processor 的应用
 date: 2019-09-29
-tags: Java
-categories: Java-AnnotationProcessor
+tags: Java-AnnotationProcessor
+categories: AnnotationProcessor
 ---
 
 作为一个程序员，每天的生活都是平淡而且枯燥。先开需求会，再来画界面。画着画着，突然感觉有点不对劲，以前画个界面不应该这么麻烦的，不知道是不是错觉，感觉使用了 ConstraintLayout 之后，画个界面越来越慢了。
