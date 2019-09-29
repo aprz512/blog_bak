@@ -1,8 +1,8 @@
 ---
 title: 0002-自定义LayoutHelper
 date: 2019-9-17
-tags: vLayout
-categories: Android源码分析-vLayout
+tags: Android源码分析-vLayout
+categories: vLayout
 ---
 
 在实现自己的 LayoutHelper 之前，我们先看看官方是如何实现的。如果你之前了解过自定义 LayoutManager，那么这个就是小意思了。
