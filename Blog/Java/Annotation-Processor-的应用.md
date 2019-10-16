@@ -488,7 +488,13 @@ abstract class BaseActivity2 : AppCompatActivity() {
 
 
 
-接下来，就只需要搞定注解生成对应的类就好了，注解处理器，就不说了，主要是 JavaPoet 的使用，它生成的类应该如下：
+接下来，就只需要搞定注解生成对应的类就好了，注解处理器，另外一篇有讲到，就不说了，主要是 JavaPoet 的使用。
+
+可以将 JavaPoet 理解为一个盒子，它可以帮助我们生成一个 Java 文件。我们写 Java 文件都是用 IDE 手写，但是使用 JavaPoet，我们可以使用 Java 语言来生成一个 Java 文件。
+
+>  直接使用 IO 流来创建文件，然后添加各种字符不一样，JavaPoet 有自己的用法，它可以很简单的让你处理Java 类的导入，编写方法的结构体等等。唯一复杂的就是，需要我们掌握这些 API 的用法。用法其实很简单的，也无需记住，需要的时候再去查文档就好了，因为对我们理解别的东西没啥帮助，除非你想看一下它的设计实现与思想。
+
+它生成的类应该如下：
 
 ```java
 public final class MainActivity_FieldSaving implements SaveUnbinder {
