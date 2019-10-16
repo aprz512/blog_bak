@@ -46,6 +46,8 @@ tags: Android-高级
 
 在这个文件里面，我们也可以搜索到我们的dex文件的摘要，资源的摘要，有兴趣的可以自己动手试试，将apk拖到AS里面就搞定了。需要注意的是，**这个文件中存放了未压缩之前的所有文件的摘要**。
 
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E9%AB%98%E7%BA%A7/%E7%AD%BE%E5%90%8D/mainfest_mf.png?raw=true)
+
 
 
 ### CERT.SF
@@ -61,6 +63,8 @@ tags: Android-高级
 
 1. 计算这个MANIFEST.MF文件的整体SHA1值，再经过BASE64编码后，记录在CERT.SF主属性块（在文件头上）的“SHA1-Digest-Manifest”属性值值下
 2. 逐条计算MANIFEST.MF文件中每一个块的SHA1，并经过BASE64编码后，记录在CERT.SF中的同名块中，属性的名字是“SHA1-Digest
+
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E9%AB%98%E7%BA%A7/%E7%AD%BE%E5%90%8D/cert_sf.png?raw=true)
 
 
 
@@ -89,6 +93,8 @@ tags: Android-高级
 这里会把之前生成的 CERT.SF文件， 用私钥计算出签名, 然后将签名以及包含公钥信息的数字证书一同写入  CERT.RSA  中保存。
 
 ![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E9%AB%98%E7%BA%A7/%E7%AD%BE%E5%90%8D/09.png?raw=true)
+
+需要理解的是：MANIFEST.MF 文件 与 CERT.SF 文件都是在计算 apk 文件的摘要。
 
 
 
@@ -240,6 +246,8 @@ zip文件分为3部分：
 2. **中央目录**
 
    存放目录信息，也是一个列表，每条记录包含：文件名、压缩前后size、本地文件头的起始偏移量等。通过本地文件头的起始偏移量即可找到压缩后的数据；
+
+   对于待压缩的目录而言，每一个子目录对应一个中央目录数据项，记录该目录的描述信息。
 
 3. **中央目录结尾记录**
 
