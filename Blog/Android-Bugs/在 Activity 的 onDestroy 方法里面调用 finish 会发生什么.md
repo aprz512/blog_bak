@@ -1,9 +1,9 @@
-
 ---
 title: 在 Activity 的 onDestroy 方法里面调用 finish 会发生什么
 date: 2019-08-18 11：11：11
-tags: Android-思考
+tags: Android-Bugs
 ---
+
 
 
 发现这个奇怪问题的起因在于同事看了MVVM的相关文章，里面提到**屏幕旋转时，Activity 销毁重建不会导致 ViewModel随着销毁而重建**。
