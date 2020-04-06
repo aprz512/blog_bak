@@ -14,7 +14,9 @@ tags: Android-View
 
 
 
-### 首先来从整体上来了解一下 RecyclerView
+### RecyclerView 的构成
+
+首先来从整体上来了解一下 RecyclerView
 
 RecyclerView 有五虎上将：
 
@@ -67,9 +69,9 @@ RecyclerView的职责就是将Datas中的数据以一定的规则展示在它的
 
 
 
+### pre-layout 与 post-layout
 
-
-### 为了能够更好的理解下面的内容，这里先介绍一下 pre-layout 与 post-layout 是什么。
+为了能够更好的理解下面的内容，这里先介绍一下 pre-layout 与 post-layout 是什么。
 
 有这样的一个场景：我们有3个item【a, b, c】，其中a与b显示在屏幕上，当我们删除b的时候，c会显示出来。
 
@@ -128,7 +130,7 @@ public final class Recycler {
 
 
 
-### scrap
+#### scrap
 
 scrap 缓存是 recyclerView 最先搜索的缓存，网上有很多缓存调用图，第一个缓存调用就是 scrap。
 
@@ -183,7 +185,7 @@ public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State 
 
 
 
-### cache 与 pool
+#### cache 与 pool
 
 cache  与 pool 中储存的均属于 Recycled View ，需要重新 add 到 列表中。
 
@@ -239,7 +241,7 @@ cache  与 pool 中储存的均属于 Recycled View ，需要重新 add 到 列�
 
 **比如，我们有一个壁纸库的列表，用户经常会上下（左右）滑动，那么我们增加 cache 的容量，就会获得更好得性能。然而对于feed流之类得列表，用户很少返回，所以增加 cache 容量意义不大。**
 
-再深入一下，我们继续向上滑动，那么，4 与 7 会放入到 cache 中，3 会从 pool 中取出来，但是，这里需要注意，因为 3 是从 pool 中取出来的，所以它需要重新绑定，但是从逻辑上来说，如果 3 位置的数据没有发生变化，它不需要重新绑定，也是有效的。**所以，你也可以把这里当作一个优化点，在 onBindViewHolder() 方法中，检查一下。**
+再深入一下，我们继续向上滑动，那么，6与 7 会放入到 cache 中，3 会从 pool 中取出来，但是，这里需要注意，因为 3 是从 pool 中取出来的，所以它需要重新绑定，但是从逻辑上来说，如果 3 位置的数据没有发生变化，它不需要重新绑定，也是有效的。**所以，你也可以把这里当作一个优化点，在 onBindViewHolder() 方法中，检查一下。**
 
 再再深入一下，在我们滑动的过程中，**一个类型的 viewHolder 在 pool 中应该一直只会存在一个**（除非你使用了 GridLayoutManager），所以，如果你的 pool 中存在多个 viewHolder 的话，**他们在滚动过程中基本上是无用的**。
 
@@ -255,7 +257,7 @@ recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 20);
 
 
 
-### ViewCacheExtension
+#### ViewCacheExtension
 
 这个是需要自定义的，而且使用有很大的限制，所以不深入介绍了。
 
@@ -267,7 +269,7 @@ recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 20);
 - 不会改变
 - 数量合理，保存在内存中没啥关系。
 
-### **Stable Ids**
+#### **Stable Ids**
 
 之前我们说过，当调用 notifyDataSetChanged 的时候，recyclerView 不知道到底发生了什么，所以它只能认为所有的东西都发生了变化，即，将所有的 viewHolder 都放入到 pool 中。
 
@@ -277,20 +279,51 @@ recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 20);
 
 ![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-View/RecyclerView/0_rGkt-nbbIBRxNsLu.png?raw=true)
 
-viewHolder 被放入了 scrap 中，而不是 pool 中。注意，这里，它的性能提升了很多！
+**viewHolder 被放入了 scrap 中，而不是 pool 中**。注意，这里，它的性能提升了很多！
 
 1. 不用重新绑定，重新创建新的 viewHolder，不用重新 addView。addView会导致重新测量...
-2. 原来我们需要调用 notifyItemMoved(4, 6)，但是现在直接调用 notifyDataSetChanged() 就好了，因为 RecyclerView 可以自己推断出来（这是一个比较简单的，所以可以推断）。
+2. 原来我们需要调用 notifyItemMoved(4, 6)，但是现在直接调用 notifyDataSetChanged() 就好了.
+
+这个方法应该在什么情况下使用呢？
+
+当你可以为每一个item设置一个唯一的id的时候，注意有些时候直接使用 position 会导致item错乱。因为 position 不会变，但是item是会变的。
+
+
+
+### setHasFixedSize()
+
+这个方法有很详细的注释：
+
+> ```
+> RecyclerView can perform several optimizations if it can know in advance that RecyclerView's size is not affected by the adapter contents. RecyclerView can still change its size based on other factors (e.g. its parent's size) but this size calculation cannot depend on the size of its children or contents of its adapter (except the number of items in the adapter).
+> <p>
+> If your use of RecyclerView falls into this category, set this to {@code true}. It will allow RecyclerView to avoid invalidating the whole layout when its adapter contents change.
+> ```
+
+意思就是说，如果你的 RecyclerView 的尺寸是固定的，那么你应该使用这个方法，因为 RecyclerView 的内部做了优化，在添加与删除等操作的时候，会走自己内部的 layout 方法，而不会走 View 体系的 layout 方法，所以这样就提升了性能。
+
+我们看看这个字段在代码里面做了什么：
+
+```java
+void onItemsInsertedOrRemoved() {
+   if (hasFixedSize) layoutChildren();
+   else requestLayout();
+}
+```
+
+但是需要注意的是，设置了这个方法之后，RecyclerView 的宽高就基本不会变化了（除非它的parent变化了），所以如果你在 XML 里面使用的 wrap_content 的话，不能使用这个方法，其他情况下基本适用，特别是添加与删除特别频繁的。
 
 
 
 到了这里，你应该可以回答下面的问题了：
 
 1. notifyDataSetChanged 与 notifyItemRangeChanged 的区别？
+
 2. RecyclerView 与 ListView 缓存的区别？这个问题，即使你不知道 ListView 的缓存机制，也应该能说些什么。
+
 3. 如何对一个列表进行性能优化？调用 notifyDataSetChanged 时闪烁的原因？
 
-
+   
 
 ### 参考文档
 
