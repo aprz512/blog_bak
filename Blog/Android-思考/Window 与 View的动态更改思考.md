@@ -63,3 +63,22 @@ relayoutWindow(...)
 我们的普通的 ViewGroup 的addView等方法，会触发 requestLayout 方法，同样的会导致 scheduleTraversals 方法的调用，所以也会有 IPC 调用。
 
 可以想象到，addView 是一个比较重量的操作。
+
+
+
+update at 2020/4/20
+
+今天看书又有新的理解。
+
+先上一张图：
+
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%80%9D%E8%80%83/wms.png?raw=true)
+
+上图讲的是：我们使用 WindowManager 将一个 view add 到 window 所涉及到的关键类。
+
+但是里面有一个叫做 IWindowSession 的东西，这个就是用来与 WMS 交互的类。刚开始我以为我们是直接与WMS进行交互的，没想到居然又转了一层。
+
+关于 ViewRootImpl 与 WMS 的交互，并不是直接操作的，而是通过 Session 来进行的，看下面的这张图：
+
+![](https://wiki.jikexueyuan.com/project/deep-android-v1/images/chapter8/image006.png)
+
