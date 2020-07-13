@@ -8,7 +8,7 @@ categories: Matrix
 
 先上个图，了解一下流程。
 
-
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/matrix_plugin.jpg?raw=true)
 
 正式开始之前，需要了解的预备知识：Transform。不清楚的这个的，看着会很蛋疼，天赋异禀除外。
 
