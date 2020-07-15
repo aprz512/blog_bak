@@ -1,5 +1,5 @@
 ---
-title:004-Matrix源码分析：AnrTracer 监控ANR
+title: 004-Matrix源码分析：AnrTracer 监控ANR
 date: 2020-7-2
 categories: Matrix
 ---
@@ -75,7 +75,7 @@ AnrTracer是用来监测ANR的，可以打印出ANR发生的具体位置。打�
 
 数据格式的意义为：methodId，方法的访问符，类， 函数。实现的函数为 `com.tencent.matrix.trace.item.TraceMethod#toString`。
 
-所以上面的 traceStack 我们逆推一下，就是 Handler#dispatchMessage 调用了 MainActivity$2#onClick，而 MainActivity$2#onClick 耗时 5004 毫秒，所以可以得出 MainActivity$2#onClick 这个方法里面有耗时操作。
+所以上面的 traceStack 我们逆推一下，就是 Handler#dispatchMessage 调用了` MainActivity$2#onClick`，而 `MainActivity$2#onClick` 耗时 5004 毫秒，所以可以得出 `MainActivity$2#onClick` 这个方法里面有耗时操作。
 
 实际上，我的demo里面确实是这样：
 
@@ -252,38 +252,38 @@ doFrame 可以忽略。
 这里只详细说一下方法堆栈的处理：
 
 ```java
-            // trace
-            LinkedList<MethodItem> stack = new LinkedList();
-            if (data.length > 0) {
-                // 将 buffer 中的 long 转为 MethodItem
-                TraceDataUtils.structuredDataToStack(data, stack, true, curTime);
-                //
-                TraceDataUtils.trimStack(stack, Constants.TARGET_EVIL_METHOD_STACK, new TraceDataUtils.IStructuredDataFilter() {
-                    @Override
-                    public boolean isFilter(long during, int filterCount) {
-                        return during < filterCount * Constants.TIME_UPDATE_CYCLE_MS;
-                    }
+// trace
+LinkedList<MethodItem> stack = new LinkedList();
+if (data.length > 0) {
+    // 将 buffer 中的 long 转为 MethodItem
+    TraceDataUtils.structuredDataToStack(data, stack, true, curTime);
+    //
+    TraceDataUtils.trimStack(stack, Constants.TARGET_EVIL_METHOD_STACK, new TraceDataUtils.IStructuredDataFilter() {
+        @Override
+        public boolean isFilter(long during, int filterCount) {
+            return during < filterCount * Constants.TIME_UPDATE_CYCLE_MS;
+        }
 
-                    @Override
-                    public int getFilterMaxCount() {
-                        return Constants.FILTER_STACK_MAX_COUNT;
-                    }
+        @Override
+        public int getFilterMaxCount() {
+            return Constants.FILTER_STACK_MAX_COUNT;
+        }
 
-                    @Override
-                    public void fallback(List<MethodItem> stack, int size) {
-                        MatrixLog.w(TAG, "[fallback] size:%s targetSize:%s stack:%s", size, Constants.TARGET_EVIL_METHOD_STACK, stack);
-                        Iterator iterator = stack.listIterator(Math.min(size, Constants.TARGET_EVIL_METHOD_STACK));
-                        while (iterator.hasNext()) {
-                            iterator.next();
-                            iterator.remove();
-                        }
-                    }
-                });
+        @Override
+        public void fallback(List<MethodItem> stack, int size) {
+            MatrixLog.w(TAG, "[fallback] size:%s targetSize:%s stack:%s", size, Constants.TARGET_EVIL_METHOD_STACK, stack);
+            Iterator iterator = stack.listIterator(Math.min(size, Constants.TARGET_EVIL_METHOD_STACK));
+            while (iterator.hasNext()) {
+                iterator.next();
+                iterator.remove();
             }
+        }
+    });
+}
 
-            StringBuilder reportBuilder = new StringBuilder();
-            StringBuilder logcatBuilder = new StringBuilder();
-            long stackCost = Math.max(Constants.DEFAULT_ANR, TraceDataUtils.stackToString(stack, reportBuilder, logcatBuilder));
+StringBuilder reportBuilder = new StringBuilder();
+StringBuilder logcatBuilder = new StringBuilder();
+long stackCost = Math.max(Constants.DEFAULT_ANR, TraceDataUtils.stackToString(stack, reportBuilder, logcatBuilder));
 
 ```
 
@@ -293,7 +293,11 @@ doFrame 可以忽略。
 
 ![Alt text](https://github.com/Tencent/matrix/wiki/images/trace/stack.jpg)
 
-还是只看上半部分，对于 4 5 6 7 这4个方法来说，经过转换后，就变为了 List list = {{4， 0}, {5，1}, {6， 1}, {7， 1}} 。
+还是只看上半部分，对于 4 5 6 7 这4个方法来说，经过转换后，就变为了
+
+```
+ List list = {{4， 0}, {5，1}, {6， 1}, {7， 1}} 。
+```
 
 这个列表里面是一个对象，我只写了 methodId 与 depth：
 
@@ -312,9 +316,9 @@ public class MethodItem {
 }
 ```
 
-拿到了所有的调用栈之后，有可能调用栈特别大，所以需要裁剪： `TraceDataUtils.trimStack`
+拿到了所有的调用栈之后，有可能调用栈特别大，所以需要裁剪： `TraceDataUtils.trimStack` 。
 
-这个方法就是用来过滤一些不耗时的函数，过滤类是 IStructuredDataFilter ：
+这个方法就是用来过滤一些不耗时的函数，过滤类是` IStructuredDataFilter `：
 
 ```java
     public interface IStructuredDataFilter {

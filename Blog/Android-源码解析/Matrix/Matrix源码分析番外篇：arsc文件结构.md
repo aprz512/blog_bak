@@ -1,7 +1,7 @@
 ---
 title: Matrix源码分析番外篇：arsc文件结构
 date: 2020-7-15
-categories: Matrixza
+categories: Matrix
 ---
 
 在 gradle 中，配置如下代码可以将无用的资源移除：
