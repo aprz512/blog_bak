@@ -1,10 +1,10 @@
 ---
 title: 009-Matrix源码分析：ApkChecker解压apk.md
-date:2020-8-2
+date: 2020-8-2
 categories: Matrix
 ---
 
-这篇本来无甚难道，之所以单独一篇，是因为它输出的一些结果，后面的 task 都会用上。
+这篇本来无甚难度，之所以单独一篇，是因为它输出的一些结果，后面的 task 都会用上。
 
 
 
