@@ -217,16 +217,39 @@ private void readSmaliLines(String[] lines) {
 ApkChecker 里面提供的思路如下：
 
 ```
-像分析无用对象一样，我们将 res 下的资源分为两部分：
-一部分是 values 资源，就是 values 文件夹下的资源（包括各种衍生文件夹，values-v23 之类的）。
-另一部分就是除了 values 资源下的其他 xml 资源文件。注意这里只有 .xml 文件。（那么仔细想一些，是不是还有部分资源没有包含进去）
-
-然后，找到代码里面引用的所有资源，就可以开始分析资源引用关系了。
-
-我们将 values 下的资源叫做 A，非 values 下的 xml 资源叫做 C，代码引用的资源叫做 B。
+首先，代码里面引用的资源肯定需要标记为已使用。比如：R.layout.activity_main，其次，R.layout.activity_main 文件引用的资源，也需要标记为已使用。
+所以，我们需要想办法收集到 res 目录下资源的相互引用关系。
 ```
 
-做下面的代码分析：
+ApkChecker 将 res 下的资源分为两部分：
+
+```java
+for (ResPackage pkg : resTable.listMainPackages()) {
+    aXmlResourceParser.getAttrDecoder().setCurrentPackage(pkg);
+    // layout
+    // drawable
+    // anim
+    // menu
+    // animator
+    // color
+    // 等等 .xml 文件
+    for (ResResource resSource : pkg.listFiles()) {
+        decodeResResource(resSource, resDir, aXmlResourceParser, nonValueReferences);
+    }
+
+    // 这里直接读取的 values 下的文件
+    for (ResValuesFile valuesFile : pkg.listValuesFiles()) {
+        Log.e("ResValuesFile", "path = " + valuesFile.getPath());
+        decodeResValues(valuesFile, xmlPullParser, serializer, valueReferences);
+    }
+}
+```
+
+nonValueReferences 最后储存的是 非values 下资源文件的引用关系，比如，R.layout.activity_main 引用了哪些资源。
+
+valueReferences 储存的是 values 下资源的引用关系，比如，R.string.app_namex 引用了哪些资源。
+
+获取了 res 下资源的相互引用关系之后，就可以开始标记有用资源了。
 
 ```java
 private void readChildReference(String resource) throws IllegalStateException {
@@ -252,13 +275,57 @@ private void readChildReference(String resource) throws IllegalStateException {
 
 这是一个深度遍历。
 
-resource参数是集合 A + B 中的元素。
+resource参数是**代码中引用的资源** + **valueReferences 集合**中的元素。
 
-我们假设，resource 是一个 layout 资源，按照上面的逻辑，该 layout 引用的所有 string，dimen， drawable 都会从 unusedResSet 集合中移除。这也就是说明它们被人引用过了，即判断它是有用资源。
+**这里有个疑问，**看如下代码：
 
-这显然是一个有bug的逻辑，就像注释里面说的，当一个无用资源A引用了无用资源B，那无用资源B岂不是被标记为有用，确实！！！
+```java
+// values 有 n 个文件夹 ： values-pl values-v24 等等
+// 判断里面的 item 有没有使用 @ 或者 attr 方式的，有就添加进来
+for (String resource : valuesReferences) {
+    if (resguardMap.containsKey(resource)) {
+        resourceRefSet.add(resguardMap.get(resource));
+    } else {
+        resourceRefSet.add(resource);
+    }
+}
+
+// resourceRefSet 现在储存的是 values 里面的引用的资源 + 代码中使用的资源
+for (String resource : resourceRefSet) {
+    readChildReference(resource);
+}
+```
+
+resourceRefSet 里面本来就有代码中引用的资源集合，这里是先添加了 valuesReferences 集合中的元素，然后才去做深度遍历。那么问题是，nonValueReferences 根本就不会包含 valuesReferences，在这之前添加有什么用处吗？？？
+
+
+
+我们继续分析上面的深度遍历代码，假设resource 是一个 layout 资源，按照上面的逻辑，该 layout 引用的所有 string，dimen， drawable 都会从 unusedResSet 集合中移除。这也就是说明它们被人引用过了，即判断它是有用资源。
+
+这显然是一个有bug的逻辑，当一个无用资源A引用了无用资源B，那无用资源B岂不是被标记为有用，确实！！！
 
 所以，有必要的话可以删除一批无用资源后，再次重新运行该工具，直到资源无变化。
+
+这里非 values 资源的逻辑是处理完了，那么 values 资源的逻辑呢，除了被 layout 等 xml 资源引用，代码中直接引用的情况有没有处理呢？
+
+其实是有的，我们看 call 方法：
+
+```java
+    @Override
+    public TaskResult call() throws TaskExecuteException {
+        try {
+            ...
+            unusedResSet.removeAll(resourceRefSet);
+            ...
+        } catch (Exception e) {
+            throw new TaskExecuteException(e.getMessage(), e);
+        }
+    }
+```
+
+在最后，它将 resourceRefSet 里面的所有资源都标记为引用了。从这里可以看出，resourceRefSet 里面的元素，都是根。
+
+所以，总结一下：**是以代码为根（不准确，values的引用也是根，不知道为啥要这么设计），然后深度遍历所有引用的资源**。
 
 #### smali 引用方式分析
 
