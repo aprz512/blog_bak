@@ -1,10 +1,10 @@
 ---
-title: 
-date:
-categories:
+title: 004-Flutter的Widget渲染
+date: 2020-8-11
+categories: Flutter
 ---
 
-事情要从[Flutter-你还在滥用StatefulWidget吗](https://lizhaoxuan.github.io/2019/01/02/Flutter-你还在滥用StatefulWidget吗/) 说起。看了这篇文章之后，我还是以为很有道理的，直到我看了 fish-redux 的大致结构，发现根本就没必要。而且这样做会带来很多麻烦，比如：组件的抽取，又要考虑不能多次 build，又要考虑复用，这两者几乎是冲突的，写出来的代码很难看。
+事情要从[Flutter-你还在滥用StatefulWidget吗](https://lizhaoxuan.github.io/2019/01/02/Flutter-你还在滥用StatefulWidget吗/) 说起。看了这篇文章之后，我还是以为很有道理的，直到我看了 fish-redux 的大致结构，发现根本就没必要。而且这样做会带来很多麻烦，比如：组件的抽取，又要考虑不能多次 build，又要考虑复用，这两者几乎是冲突的，写出来的代码很难看。但是话说回来，能减少 build 的控件当然最好了，这样创建销毁的对象也少些。
 
 fish-redux 里面将 page 作为一个整体来 build，每次 state 发生变化的时候，重新 build 一次就好了。即使只有一个 text 发生了变化，也要重新 build 一次。虽然看起来，build 了很多无用的东西，实际上渲染的时候，只渲染了变化的 text 部分。
 
