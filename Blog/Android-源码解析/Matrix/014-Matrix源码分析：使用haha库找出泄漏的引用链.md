@@ -1,5 +1,7 @@
 ---
 title: 014-Matrix源码分析：使用haha库找出泄漏的引用链
+date: 2020-8-18
+categories: Matrix
 ---
 
 听说现在 LeakCanary 改用 shark 这个库来分析 hprof 了。
