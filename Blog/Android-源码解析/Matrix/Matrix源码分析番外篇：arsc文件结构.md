@@ -95,7 +95,7 @@ android {
 
 ![image-20200715151305634](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/arsc4.png?raw=true)
 
-这里可以看到，我们定义的 app_name，unused_string，但是他们的值却看不到，我刚开始以为是模板出错了，后来想了一下，可能是因为如果是图片等资源的话，根本就解析不出来，所以这里的 value 因该是指向的第一个字符串池，里面储存的是资源路径，拿到资源路径后再去加载资源。理论上值就是上面字符串池中的索引引用。
+这里可以看到，我们定义的 app_name，unused_string，但是他们的值却看不到，我刚开始以为是模板出错了，后来想了一下，可能是因为不好判断资源的类型，解析出正确的结果是很麻烦的，这里的 value 是指向的第一个字符串池，里面储存的是资源路径，拿到资源路径后再去加载资源。**理论上值就是上面字符串池中的索引引用**，但是还要根据不同资源类型做不同的逻辑处理。
 
 layout 也是一样的，这里就不贴图了。
 
@@ -115,7 +115,7 @@ layout 也是一样的，这里就不贴图了。
 
 ResTable_entry  里面存了 abc_action_bar_embed_tabs，但是不是直接存的，存的是上面字符串池的字符索引。
 
-Res_value 里面存了当前资源的类型，我们需要先要搞清楚它的类型，然后，再去 data 里面去拿资源路径。
+Res_value 里面存的就是StringPoolType常量池中 ResStringPool_string 的数组索引，但是还要根据不同资源类型做不同的逻辑处理。
 
 我们拿，app_name 来说明一下，arsc 是如何根据 resourceId 来获取资源的。
 
