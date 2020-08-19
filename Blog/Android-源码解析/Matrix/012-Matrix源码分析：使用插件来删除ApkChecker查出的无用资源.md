@@ -1,5 +1,5 @@
 ---
-title: Matrix源码分析番外篇：Dex文件结构
+title: 012-Matrix源码分析：使用插件来删除ApkChecker查出的无用资源
 date: 2020-8-12
 categories: Matrix
 ---
