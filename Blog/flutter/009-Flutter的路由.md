@@ -113,7 +113,7 @@ _onPushTap(BuildContext context) {
 }
 ```
 
-在HYDetailPage中，如何获取到参数呢？在**build**方法中ModalRoute.of(context)可以获取到传递的参数，由于只能在 build 方法中获取参数，所以一般不这样传递参数。
+在HYDetailPage中，如何获取到参数呢？在**build**方法中ModalRoute.of(context)可以获取到传递的参数，由于只能在 build 方法中获取参数，所以**一般不这样传递参数**。
 
 ```
   Widget build(BuildContext context) {
