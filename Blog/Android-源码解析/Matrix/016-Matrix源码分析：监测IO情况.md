@@ -4,6 +4,8 @@ date: 2020-8-31
 categories: Matrix
 ---
 
+> 经过一个星期的 C++ 基本语法的学习，终于可以继续分析了，好不容易写了 15 篇，被个 C++ 拦住了就笑死人了。
+
 IO的监测功能由以下3个库实现：
 
 ```
@@ -71,7 +73,9 @@ __write_chk
 
 爱奇艺开源的 xhook 可以 hook .so 中的函数，Github 上有相关信息，有兴趣的可以去看源码。
 
-这里我们看一下使用方式。
+先上一张图，再看一下使用方式：
+
+
 
 #### open
 
@@ -98,7 +102,7 @@ JNIEXPORT jboolean JNICALL
 }
 ```
 
-可以看到，使用还是挺简单的，先打开 .so 文件，然后传递需要hook的函数名，以及俩个二级函数指针就好了，我们看看 ProxyOpen 函数：
+可以看到，使用还是挺简单的，先打开 .so 文件，然后传递需要hook的函数名，以及俩个函数指针就好了，我们看看 ProxyOpen 函数：
 
 > iocanary::ProxyOpen
 
@@ -168,12 +172,12 @@ kJavaBridgeClass 等变量在 JNI_OnLoad 的时候就已经初始化好了。这
                                  const JavaContext &java_context) {
         //__android_log_print(ANDROID_LOG_DEBUG, kTag, "OnOpen fd:%d; path:%s", open_ret, pathname);
 
-        // 文件打开失败
+        // 文件打开失败返回 -1，成功返回文件描述符，太奇葩了
         if (open_ret == -1) {
             return;
         }
 
-        // 这里很奇怪啊，为啥要使用 返回值作为key？？？open_ret 是文件的描述符
+        // 这里刚开始会觉得很奇怪啊，为啥要使用 返回值作为key？？？因为 open_ret 是文件的描述符
         // 文件已经被记录了
         if (info_map_.find(open_ret) != info_map_.end()) {
             //__android_log_print(ANDROID_LOG_WARN, kTag, "OnOpen fd:%d already in info_map_", open_ret);
@@ -273,8 +277,6 @@ kJavaBridgeClass 等变量在 JNI_OnLoad 的时候就已经初始化好了。这
 这里也记录了一些信息，注意，这里返回了指针，然后 map 里面的键值对被擦除了。
 
 
-
-### 主线程IO
 
 经过上面对几个函数的hook，我们可以获取到读写文件时的详细信息。拿到这些信息之后，我们就可以进行相应的处理，判断该IO行为是否正常。
 
@@ -476,6 +478,8 @@ install 函数里面：
 
 OnClose 是我们的 hook 函数的代码，它在文件关闭的时候会被调用，所以结论就是文件关闭的时候，会返回（上面提到过）一个 IOInfo 的指针，然后将它放到队列中，通知等待线程开始执行，最后就回调到了我们的监听代码中。
 
+### 主线程IO
+
 我们看看主线程IO的监听代码：
 
 ```c++
@@ -508,19 +512,19 @@ OnClose 是我们的 hook 函数的代码，它在文件关闭的时候会被调
 
 这个监听我就不贴代码了，感觉它现在有点鸡肋，我的 note 分支里面有详细注释，有兴趣可以查看。
 
-其实，我觉得可以统计一下App在一次运行过程中，每个文件被读取的次数。反正你可以获取到每次IO的所有信息，像做什么就做什么。
+其实，我觉得可以统计一下App在一次运行过程中，每个文件被读取的次数。反正你可以获取到每次IO的所有信息，想做什么就做什么。
 
 
 
 ### 小 Buffer 的io
 
-我们知道，对于文件系统是以block为单位读写，对于磁盘是以page 为单位读写，看起来即使我们在应用程序上面使用
-很小的Buffer，在底层应该差别不大，那是不是这样呢？
-[![结果显示](https://aheadsnail.github.io/uploads/Matrix%20Trace%E5%88%86%E6%9E%90/Io%E6%96%87%E4%BB%B6Buff%E4%BD%BF%E7%94%A8.png)](https://aheadsnail.github.io/uploads/Matrix Trace分析/Io文件Buff使用.png)
+我们知道，对于文件系统是以block为单位读写，对于磁盘是以page 为单位读写，看起来即使我们在应用程序上面使用很小的Buffer，在底层应该差别不大，那是不是这样呢？
 
-虽然后面俩次系统调用的时间的确会少一些，但是也会有一定的耗时，如果我们的Buffer太小，会导致多次无用的系统调用和内存拷贝，导致read/write的次数增多，从而影响性能，那多大的Buff Size合适呢，一般为4KB,在实际应用中，ObjectOutputStream 就是一个很好的例子，ObjectOutputStream使用的buff size非常小，如果我们使用BufferInputStream或者ByteArrayOutputStream后整体的性能,会有非常明显的提升,下面是检测的结果。
+实际上不是的，因为如果 buffer 过小，会导致多次无用的系统调用，write与read的次数变多，这样性能就下降了，那么应该如何选择 buffer的大小呢？可以参考文件系统的 block size 的大小来决定。一般是 4K。
 
-所以检测读写Buff过小是非常重要的。
+那么又来了一个问题？buffer搞很大会咋样呢？实际上如果你自己测试一下的话，会发现4K往上的话，收益就开始变小了，甚至会降低。所以一般推荐 4K 以上，也不要搞太大。
+
+看一下监测小buffer的代码，很简单：
 
 ```c++
     void FileIOSmallBufferDetector::Detect(const IOCanaryEnv &env, const IOInfo &file_io_info,
