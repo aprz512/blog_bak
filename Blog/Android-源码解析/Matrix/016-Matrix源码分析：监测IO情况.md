@@ -75,7 +75,7 @@ __write_chk
 
 先上一张图，再看一下使用方式：
 
-
+![https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/ba36f8e259427bde06bc44861905c63c.png?raw=true](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/ba36f8e259427bde06bc44861905c63c.png?raw=true)
 
 #### open
 
@@ -276,7 +276,7 @@ kJavaBridgeClass 等变量在 JNI_OnLoad 的时候就已经初始化好了。这
 
 这里也记录了一些信息，注意，这里返回了指针，然后 map 里面的键值对被擦除了。
 
-
+### 流程
 
 经过上面对几个函数的hook，我们可以获取到读写文件时的详细信息。拿到这些信息之后，我们就可以进行相应的处理，判断该IO行为是否正常。
 
