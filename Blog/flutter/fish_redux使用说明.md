@@ -389,3 +389,8 @@ class GlobalState implements GlobalBaseState, Cloneable<GlobalState> {
 
 当全局数据被改变的时候，会调用 visitor 函数，所以 page 中的 state 也会改变。可以猜出来，它其实就是一个 reducer。
 
+
+
+### 代码例子
+
+https://github.com/aprz512/first_flutter_demo
