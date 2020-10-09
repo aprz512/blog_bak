@@ -46,7 +46,9 @@ AnrTracer是用来监测ANR的，可以打印出ANR发生的具体位置。打�
 
 从 proc/[pid\]/stat 文件中获取的，主要描述了进程的优先级与前后台状态。nice 值与 oom_adj 有关，越低越好。
 
-进程前后台状态是根据 ActivityLifecycleCallbacks 来判断的，没啥稀奇的。有一个地方需要注意，它判断进入后台是使用的 `com.tencent.matrix.AppActiveMatrixDelegate#getTopActivityName` 这个方法，里面使用反射查找 ActivityThread 的 mActivities 集合中 activity 的状态。不清楚这样是否会更好一点。我们通常是直接在 onStop 里面直接做了处理，没有这么麻烦。
+进程前后台状态是根据 ActivityLifecycleCallbacks 来判断的，没啥稀奇的。有一个地方需要注意，它判断进入后台是使用的
+
+`com.tencent.matrix.AppActiveMatrixDelegate#getTopActivityName` 这个方法，里面使用反射查找 ActivityThread 的 mActivities 集合中 activity 的状态。不清楚这样是否会更好一点。我们通常是直接在 onStop 里面直接做了处理，没有这么麻烦。
 
 第二项是内存状态。
 

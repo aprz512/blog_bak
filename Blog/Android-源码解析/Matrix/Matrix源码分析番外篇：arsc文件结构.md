@@ -172,7 +172,7 @@ OK，这里我们对 arsc 应该有一定的了解了，再回到主题，看看
 
 最后，再贴一张 .arsc 的结构图
 
-![](https://user-gold-cdn.xitu.io/2019/8/10/16c7a2df8e9b7641?imageslim)
+![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/arsc.png?raw=true)
 
 有了上面的经验，再看这张图应该会清晰一点吧。
 

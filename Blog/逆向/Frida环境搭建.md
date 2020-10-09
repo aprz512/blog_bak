@@ -34,7 +34,7 @@ Anaconda 安装好了之后，再安装两个依赖包：
 - frida-tools
 
 ```
- pip install frida
+ pip install frida 			// 这个贼慢
  pip install frida-tools
 ```
 

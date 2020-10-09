@@ -32,21 +32,21 @@ public class HelloWorld {
 
 拿到 dex 文件后，我们使用 010 editor 打开它，可以看到如下内容：
 
-![img](https://img-blog.csdn.net/20170219232145296?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex1.png?raw=true)
 
 下面的表格就是 dex 的大致结构。点开各个entry，里面又有很多东西，我们慢慢道来，其实这个与 class 文件结构很像，如果你读过 《深入理解Java虚拟机》就很容易上手。
 
 ### dex_header
 
-![img](https://img-blog.csdn.net/20170219231635136?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex2.png?raw=true)
 
-![img](https://img-blog.csdn.net/20170219232259797?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex3.png?raw=true)
 
 1.  **magic[8]**；它代表dex中的文件标识，一般被称为魔数。是用来识别dex这种文件的，它可以判断当前的dex文件是否有效，可以看到它用了8个1字节的无符号数来表示，我们在010Editor中可以看到也就是“64 65 78 0A 30 33 35 00 ”这8个字节，这些字节都是用16进制表示的，用16进制表示的话，两个数代表一个字节（一个字节等于8位，一个16进制的数能表示4位）。这8个字节用ASCII码表转化一下可以转化为：dex 035。
 
 2. **checksum**;  它是dex文件的校验和，通过它可以判断dex文件是否被损坏或者被篡改。它占用4个字节，也就是“5D 9D F9 59”。这里提醒一下，在010Editor中，其实可以分别识别我们在DexHeader中看到的这些字段的，你可以点一下这里：
 
-   ![img](https://img-blog.csdn.net/20170219232259797?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+   ![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex4.png?raw=true)
 
    你可以看到这个header列表展开了，其实我们分析下来就和它这个结构是一样的，你可以先看下，我们现在分析到了checksum中了，你可以看到后面对应的值是“59 F9 9D 5D”。咦？这好像和上面的字节不是一一对应的啊。对的，你可以发现它是反着写的。这是由于dex文件中采用的是**小字节序的编码方式**，也就是低位上存储的就是低字节内容，所以它们应该要反一下。
 
@@ -56,7 +56,7 @@ public class HelloWorld {
 
 5. **headerSize**;表示DexHeader头结构的大小，占用4个字节。这里可以看到它一共占用了112个字节，112对应的16进制数为70h，你可以选中头文件看看010Editor是不是真的占用了这么多：
 
-![img](https://img-blog.csdn.net/20170219234320395?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex5.png?raw=true)
 
 6. **endianTag**;代表 字节序标记，用于指定dex运行环境的cpu，预设值为0x12345678，对应在101Editor中为“78 56 34 12”（小字节序）。
 
@@ -64,7 +64,7 @@ public class HelloWorld {
 
 8. 再下来就是**mapOff**字段了，它指定了DexMapList的文件偏移，这里我们先不过多介绍它，你可以看一下它的值为“14 04 00 00”，它其实对应的16进制数就是414h（别忘了小字节序），我们可以在414h的位置看一下它在哪里：
 
-![img](https://img-blog.csdn.net/20170219232553595?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex6.png?raw=true)
 
 ​		其实就是dex文件最后一部分内容。关于这部分内容里面是什么，我们先不说，继续往下看。
 
@@ -85,7 +85,7 @@ public class HelloWorld {
 
 我们就先介绍一下DexStringId这个结构，图中从70h开始，
 
-![img](https://img-blog.csdn.net/20170219232804827?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex7.png?raw=true)
 
 所有被选中的都是DexStringId这种数据结构的内容，DexStringId代表的是字符串的位置偏移，每个DexStringId占用4个字节，也就是说**它里面存的还不是真正的字符串，它们只是存储了真正字符串的偏移位置**（偏移位置从0开始算起）。
 
@@ -93,31 +93,31 @@ public class HelloWorld {
 
 取第一个“**B2 02 00 00**”，它代表的位置偏移是2B2h，我们先找到这个位置：   
 
-![img](https://img-blog.csdn.net/20170219232921940?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex8.png?raw=true)
 
 可以发现我一共选中了10个字节，这10个字节就表示了一个字符串。下面我们看一下dex文件中的字符串是如何表示的。dex中的字符串采用了一种叫做**MUTF-8这样的编码**，它是经过传统的UTF-8编码修改的。在MTUF-8中，它的头部存放的是由uleb128编码的字符的个数。
 
 也就是说在“08 3C 63 6C 69 6E 69 74 3E 00”这些字节中，**第一个08指定的是后面需要用到的编码的个数，也就是8个**，即“ 3C 63 6C 69 6E 69 74 3E”这8个，但是我们为什么一共选中了10个字节呢，**因为最后一个空字符“0”表示的是字符串的结尾**，字符个数没有把它算进去。下面我们来看看“ 3C 63 6C 69 6E 69 74 3E”这8个字符代表了什么字符串：
 
-![img](https://img-blog.csdn.net/20170219234215503?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex9.png?raw=true)
 
 （要说明的一点是，这里凑巧这几个uleb128编码的字符都用了1个字节，所以我们可以这样进行查询，uleb128编码标准用的是1~5个字节， 这里只是恰好都是一个字节）。也就是说上面的70h开始的第一个DexStringId指向的其实是字符串“<clinit>”（但是貌似我们的代码中没有用到这个字符串啊，先不用管，我们接着分析）。再看到这里：
 
-![img](https://img-blog.csdn.net/20170219233207816?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex10.png?raw=true)
 
 刚刚我们分析到“B2 02 00 00”所指向的真实字符串了，下面我们接着再分析一个，我们直接分析第三个，不分析第二个了。第三个为“**C4 02 00 00**”，对应的位置也就是2C4h，我们找到它：
 
-![img](https://img-blog.csdn.net/20170219233411832?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex11.png?raw=true)
 
 看这里，这就是2C4h的位置了。我们首先看第一个字符，它的值为0Bh，也就是十进制的11，也就是说接下来的11个字符代表了它的字符串，我们依旧是查看接下来11个字符代表的是什么，经过查询整理：  
 
-![img](https://img-blog.csdn.net/20170219233527432?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex12.png?raw=true)
 
 上面就是“HelloDalvik”这个字符串，可以看看我们的代码，我们确实用了一个这样的字符串，bingo。
 
 下面剩下的字符串就不分析了。其实直接使用 010 editor 会更直观一些。
 
-![img](https://img-blog.csdn.net/20170220090958120?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex13.png?raw=true)
 
 我们这半天分析的stringIdsSize 和 stringIdsOff字段指向的位置就是上面那个箭头指向的位置，它们里面存储的是真实字符串的位置偏移，它们都存储在data区域。（先透露一下，后面我们要分析的几个也和stringIdsSize 与stringIdsOff字段类似，它们里面存储的基本都是位置偏移，并不是真正的数据，真正的数据都在data区域）
 
@@ -125,11 +125,11 @@ public class HelloWorld {
 
 这个里面描述的是类型（基本类型，类类型）。
 
-![img](https://img-blog.csdn.net/20170220092037839?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex14.png?raw=true)
 
 typeIdsSize的值为9h，也就是我们dex文件中用到的类的类型一共有9个，位置偏移在E0h位置，下面我们找到这个位置
 
-![img](https://img-blog.csdn.net/20170220092327609?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex15.png?raw=true)
 
 这里我们又得介绍一种数据结构了，因为这里的数据也是一种数据结构的数据组成的。
 
@@ -149,11 +149,11 @@ struct DexTypeId{
 
 这个里面描述的是方法签名。
 
-![img](https://img-blog.csdn.net/20170220130320504?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex16.png?raw=true)
 
 protoIdsSize的值为十进制的7，说明有7个方法原型，然后位置偏移为104h，我们找到这个位置
 
-![img](https://img-blog.csdn.net/20170220130539493?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex17.png?raw=true)
 
 下面又有新的数据结构了。
 
@@ -202,17 +202,17 @@ struct DexTypeItem{
 
 最后，我们看“94 02 00 00”，它代表的是DexTypeList的位置偏移，它的值为294h，我们找到这个位置：
 
-![img](https://img-blog.csdn.net/20170220133454816?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex18.png?raw=true)
 
 这里是DexTypeList结构，首先看前4个字节，代表的是DexTypeItem的个数，“02 00 00 00 ”也就是2，说明接下来有2个DexTypeItem的数据，每个DexTypeItem占用2个字节，也就是两个都是“00 00”，它们的值是DexTypeId列表的索引，我们去找一下，发现0对应的是I，也就是说它的两个参数都是int型的。因此这个方法的声明我们也就确定了，也就是int(int,int)。
 
 ### dex_field_ids
 
-![img](https://img-blog.csdn.net/20170220135515674?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex19.png?raw=true)
 
 fieldIdsSize为3h，说明共有3个字段。fieldIdsOff为158h，说明偏移为158h，我们继续看到158h这里：
 
-![img](https://img-blog.csdn.net/20170220135811642?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex20.png?raw=true)
 
 接下来的数据结构是DexFieldId，我们看下
 
@@ -234,11 +234,11 @@ struct DexFieldId{
 
 ### dex_method_ids
 
-![img](https://img-blog.csdn.net/20170220141559750?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex21.png?raw=true)
 
 methodIdsSize，为Ah，即十进制的10，说明共有10个方法。methodIdsOff，为170h，说明它们的位置偏移在170h。我们看到这里
 
-![img](https://img-blog.csdn.net/20170220141911286?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex22.png?raw=true)
 
 请看DexMethodId
 
@@ -264,11 +264,11 @@ struct DexMethodId{
 
 ### dex_class_defs
 
-![img](https://img-blog.csdn.net/20170220151322282?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex23.png?raw=true)
 
 classDefsSize字段，为1，也就是只有一个类定义，classDefsOff，为1C0h，我们找到它的偏移位置。
 
-![img](https://img-blog.csdn.net/20170220151553585?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex24.png?raw=true)
 
 接下来的数据结构是DexClassDef，请看
 
@@ -301,7 +301,7 @@ annotationsOff字段指向注解目录接口，根据类型不同会有注解类
 
 接下来是classDataOff了，它指向的是DexClassData结构的位置偏移，DexClassData中存储的是类的数据部分，我们开始详细分析一下它，首先，还是先找到偏移位置3F8h：
 
-![img](https://img-blog.csdn.net/20170220154332253?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2luYXRfMTgyNjg4ODE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![image](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/dex25.png?raw=true)
 
 我们看看DexClassData数据结构：
 

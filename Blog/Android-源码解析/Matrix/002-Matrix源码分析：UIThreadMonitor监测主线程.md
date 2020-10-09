@@ -12,9 +12,11 @@ categories: Matrix
 
 上面说了一个题外话，我们现在来看看如何监测主线程。了解这个类还需要一点预备知识：
 
-FrameDisplayEventReceiver 在收到 VSYNC 信号之后，会调用 doFrame 方法，而 doFrame 方法就会处理 Choreographer.CALLBACK_INPUT，Choreographer.CALLBACK_ANIMATION，Choreographer.CALLBACK_TRAVERSAL这些东西。
+FrameDisplayEventReceiver 在收到 VSYNC 信号之后，会调用 doFrame 方法，而 doFrame 方法就会处理 Choreographer.CALLBACK_INPUT，
 
-![img](https://upload-images.jianshu.io/upload_images/2828107-01d883ce1e6fd1ae.png?imageMogr2/auto-orient/strip|imageView2/2/w/867/format/webp)
+Choreographer.CALLBACK_ANIMATION，Choreographer.CALLBACK_TRAVERSAL这些东西。
+
+![uithreadmonitor1.png](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Matrix/uithreadmonitor1.png?raw=true)
 
 他们分别是 事件处理，动画，界面绘制相关的东西。比如对于属性动画，它注册了帧回调，会将相关代码添加到 Choreographer 的动画队列里面，然后下一帧就会被执行，动画也就得到了处理。
 
@@ -43,6 +45,8 @@ Message msg = mHandler.obtainMessage(MSG_DO_FRAME);
 
 这里是使用反射获取了 Choreographer 类的一些字段与方法，后面会用于向队列里面添加回调。
 
+
+
 > com.tencent.matrix.trace.core.UIThreadMonitor#init
 
 ```java
@@ -67,7 +71,11 @@ Message msg = mHandler.obtainMessage(MSG_DO_FRAME);
         });
 ```
 
-接下来就是注册了监听，这个监听的触发时机上一节我们分析过，分发消息的时候会成对的回调。我们继续看 dispatchBegin 与 dispatchEnd：
+接下来就是注册了监听，这个监听的触发时机上一节我们分析过，分发消息的时候会成对的回调。
+
+
+
+我们继续看 dispatchBegin 与 dispatchEnd：
 
 > com.tencent.matrix.trace.core.UIThreadMonitor#dispatchBegin
 
@@ -93,7 +101,9 @@ dispatchTimeMs[0] 是手机从启动到现在的时间。
 
 dispatchTimeMs[2] 是线程运行的时间。
 
-然后是通知自己的 observers，相当于又转了一下，利用 LooperDispatchListener 来通知自己的 LooperObserver。
+
+
+然后是通知自己的 observers，**相当于又转了一下**，利用 LooperDispatchListener 来通知**自己的 LooperObserver**。
 
 > com.tencent.matrix.trace.core.UIThreadMonitor#dispatchEnd
 
@@ -137,7 +147,7 @@ dispatchTimeMs[3] 是线程运行时间，与 dispatchTimeMs[2] 对应起来看�
 
 dispatchTimeMs[1] 是手机从启动到现在的时间，dispatchTimeMs[0] 对应就可以知道该方法现实时间的耗时。注意两个耗时的区别，现实耗时是大于线程耗时的，因为线程会切片运行。
 
-这个方法，也主要是回调了 observer.doFrame 和 observer.dispatchEnd 两个方法。
+这个方法，**也主要是回调了 observer.doFrame 和 observer.dispatchEnd 两个方法，这两个方法几乎是同时调用的，方法里面的参数是我们需要的**。
 
 这里有个地方有点疑问：按照 LooperObserver 的3个方法来看，显然是要监测 doFrame 的运行情况，而 doFrame 只是一个特定的消息才会回调，假如我随便发送了一个普通的消息，也会触发这3个回调，那不是有问题吗？
 
@@ -149,13 +159,11 @@ dispatchTimeMs[1] 是手机从启动到现在的时间，dispatchTimeMs[0] 对�
  activityName[com.example.sample.MainActivity] frame cost:0ms [104300|2480|218640]ns
 ```
 
-我使用hander发送了一个message，打印出来的日志是这样的，就是说如果不是执行的 doFrame 的消息，frameCostMs 是 0，其余的是上一帧的值。
+我使用hander发送了一个message，打印出来的日志是这样的，就是说如果不是执行的 doFrame 的消息，frameCostMs 是 0，其余的是上一帧的值。我们注意一下就行了。
 
-我们注意一下就行了，上面的函数中，开头就有一个 if 判断，这个很重要，里面涉及到我们上面所说的3个队列。
+上面的函数中，开头就有一个 if 判断，这个很重要，里面涉及到我们上面所说的3个队列。
 
-让我们从头道来：
-
-首先，外部会调用该类的 onStart 方法：
+让我们从头道来，首先，外部会调用该类的 onStart 方法：
 
 > com.tencent.matrix.trace.core.UIThreadMonitor#onStart
 
@@ -226,7 +234,7 @@ dispatchTimeMs[1] 是手机从启动到现在的时间，dispatchTimeMs[0] 对�
     }
 ```
 
-这里其实就是向3个队列的头部插入 runnable，然后执行runnable的时候，调用对应的 begin与end方法。
+**这里其实就是向3个队列的头部插入 runnable，然后执行runnable的时候，计算出时差，调用对应的 begin与end方法。**
 
 > com.tencent.matrix.trace.core.UIThreadMonitor#doQueueBegin
 >

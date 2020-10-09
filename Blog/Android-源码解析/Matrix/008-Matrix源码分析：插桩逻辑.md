@@ -120,10 +120,10 @@ extension.getCustomDexTransformName()， 说明我们自己也可以配置想要
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         super.transform(transformInvocation);
-		...
+        ...
 
-            doTransform(transformInvocation); // hack
-		...
+        doTransform(transformInvocation); // hack
+        ...
         // 进行原来的处理逻辑
         origTransform.transform(transformInvocation);
 
@@ -308,7 +308,7 @@ CollectJarTask
             // 判断类是否 被配置在了 黑名单中
             boolean isNeedTrace = isNeedTrace(configuration, traceMethod.className, mappingCollector);
             // filter simple methods
-            // 跳过 空方法，get/set 方法，没有调用其他方法的方法，可以理解为叶子方法
+            // 跳过 空方法，get/set 方法，以及 isSingleMethod ，这个没太搞懂
             if ((isEmptyMethod() || isGetSetMethod() || isSingleMethod())
                     && isNeedTrace) {
                 ignoreCount.incrementAndGet();
@@ -341,7 +341,7 @@ CollectJarTask
         methodTracer.trace(dirInputOutMap, jarInputOutMap);
 ```
 
-调用 trace 方法，trace 方法调用层次较深，最终会调用到 TraceClassAdapter，这个 TraceClassAdapter 与 第二步的 TraceClassAdapter 逻辑差不多，有一点点不一样，主要是它们关系的逻辑不同，这个 TraceClassAdapter 也是没有主要逻辑，主要逻辑在 TraceMethodAdapter 中：
+调用 trace 方法，trace 方法调用层次较深，最终会调用到 TraceClassAdapter，这个 TraceClassAdapter 与 第二步的 TraceClassAdapter 逻辑差不多，有一点点不一样，主要是它们关心的逻辑不同，这个 TraceClassAdapter 也是没有主要逻辑，主要逻辑在 TraceMethodAdapter 中：
 
 ```java
         @Override

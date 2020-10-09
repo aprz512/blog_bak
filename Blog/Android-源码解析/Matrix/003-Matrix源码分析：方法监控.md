@@ -12,7 +12,7 @@ https://github.com/Tencent/matrix/wiki/Matrix-Android-TraceCanary
 
 知道了每个函数的耗时，就可以找出卡顿的原因。
 
-下面我们来分析这个类。
+下面我们来分析这个类，首先来看一个字段。
 
 
 
@@ -122,15 +122,10 @@ private static volatile int status = STATUS_DEFAULT;
 
 realExecute 只会调用一次，里面启动了一个线程专门用来更新时间（隔5ms循环一次），原因是：
 
-> 考虑到每个方法执行前后都获取系统时间（System.nanoTime）会对性能影响比较大，
+> 考虑到每个方法执行前后都获取系统时间（System.nanoTime）会对性能影响比较大，而实际上，单个函数执行耗时小于 5ms 的情况，对卡顿来说不是主要原因，可以忽略不计，如果是多次调用的情况，则在它的父级方法中可以反映出来，所以为了减少对性能的影响，通过另一条更新时间的线程每 5ms 去更新一个时间变量，而每个方法执行前后只读取该变量来减少性能损耗。
 >
-> 而实际上，单个函数执行耗时小于 5ms 的情况，对卡顿来说不是主要原因，可以忽略不计，
->
-> 如果是多次调用的情况，则在它的父级方法中可以反映出来，所以为了减少对性能的影响，
->
-> 通过另一条更新时间的线程每 5ms 去更新一个时间变量，而每个方法执行前后只读取该变量来减少性能损耗。
 
-还hack了 ActivityThread 的 H 的 callback，主要是用来拦截消息的处理，是一种很常用的 hook 方式，里面做了启动的耗时监测，暂时不深入，后面再说。
+方法里面还hack了 ActivityThread 的 H 的 callback，主要是用来拦截消息的处理，是一种很常用的 hook 方式，里面做了启动的耗时监测，暂时不深入，后面再说。
 
 > com.tencent.matrix.trace.core.AppMethodBeat#mergeData
 
@@ -149,7 +144,7 @@ realExecute 只会调用一次，里面启动了一个线程专门用来更新�
         // sBuffer 是一个long数组，long的结构：
         // 第1位是 1或者0，1是函数入口，0是函数出口
         // 2-21位是 methodId
-        // 22-64位是 函数的执行前后距离 MethodBeat 模块初始化的时间，一个函数会有占两个问题，根据 methodId 就可以计算出函数耗时
+        // 22-64位是 函数的执行前后距离 MethodBeat 模块初始化的时间，一个函数会有占两个位置，根据 methodId 就可以计算出函数耗时
         sBuffer[index] = trueId;
         // 该方法用于处理循环问题，sBuffer满了，会重头开始覆盖旧数据，主要是更新 indexRecord 链表头位置
         checkPileup(index);
@@ -212,10 +207,11 @@ index 字段是用来记录 sBuffer 中的位置的。next 说明它是一个链
 
 用法如下：
 
-比如我们在，分发消息之前，首先调用 `com.tencent.matrix.trace.core.AppMethodBeat#maskIndex` 方法，传递一个 source 作为参数，得到一个 IndexRecord 对象，然后在分发消息结束后，再获取拿到 sIndex 的值，这样就有了两个 sIndex。取出这个范围里面的数据就好了。
+比如我们在，分发消息之前，首先调用 `com.tencent.matrix.trace.core.AppMethodBeat#maskIndex` 方法，传递一个 source 作为参数，得到一个 IndexRecord 对象，然后在分发消息结束后，再获取到 sIndex 的值，这样就有了两个 sIndex。取出这个范围里面的数据就好了。
 
 ```java
 AppMethodBeat.IndexRecord beginRecord = AppMethodBeat.getInstance().maskIndex("AnrTracer#dispatchBegin");
+// 方法的调用栈信息在 data 里面
 long[] data = AppMethodBeat.getInstance().copyData(beginRecord);
 beginRecord.release();
 ```
