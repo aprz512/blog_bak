@@ -1,7 +1,7 @@
 ---
 title: 动态代理与InvocationHandler
 date: 2020-4-3
-tag: Android-思考
+categories: Android
 ---
 
 在说动态代理之前，我们先看一下静态代理。说起静态代理，很多人都会会心一样，因为它太简单了。
