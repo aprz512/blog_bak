@@ -1,7 +1,7 @@
 ---
 title: Bitmap
-date: 2019-08-18 11：11：11
-tags: Android-知识点
+date: 2019-08-18
+categories: Android
 ---
 
 
