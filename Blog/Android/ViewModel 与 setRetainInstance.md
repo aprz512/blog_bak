@@ -1,6 +1,8 @@
 
 ---
 title: ViewModel 与数据保存思考
+index_img: /cover/18.jpg
+banner_img: /cover/top.jpg
 date: 2019-08-18
 categories: Android
 ---

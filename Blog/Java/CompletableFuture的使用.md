@@ -1,5 +1,7 @@
 ---
 title: CompletableFuture 的使用
+index_img: /cover/18.jpg
+banner_img: /cover/top.jpg
 date: 2019-08-18
 tags: Java
 ---

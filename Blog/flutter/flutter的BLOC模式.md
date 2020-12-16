@@ -1,5 +1,7 @@
 ---
 title: flutter的BLOC模式
+index_img: /cover/2.jpg
+banner_img: /cover/top.jpg
 date: 2019-12-2
 tags: flutter
 categories: flutter

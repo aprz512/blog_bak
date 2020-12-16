@@ -1,5 +1,7 @@
 ---
 title: View 的滑动处理（三）
+index_img: /cover/21.jpg
+banner_img: /cover/top.jpg
 date: 2019-08-21
 tags: Android-View
 categories: View 的滑动

@@ -1,5 +1,7 @@
 ---
 title: 016-Matrix源码分析：监测IO情况
+index_img: /cover/31.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-31
 categories: Matrix
 ---

@@ -1,5 +1,7 @@
 ---
 title: HttpDnsLib分析
+index_img: /cover/30.jpg
+banner_img: /cover/top.jpg
 date: 2020-6-30
 categories: 网络优化
 ---

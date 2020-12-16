@@ -1,5 +1,7 @@
 ---
 title: 压缩、混淆、优化你的App
+index_img: /cover/18.jpg
+banner_img: /cover/top.jpg
 date: 2019-08-18
 tags: Android-汉化
 ---

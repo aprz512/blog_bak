@@ -1,5 +1,7 @@
 ---
 title: 008-Flutter的适配
+index_img: /cover/10.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-10
 categories: Flutter
 ---

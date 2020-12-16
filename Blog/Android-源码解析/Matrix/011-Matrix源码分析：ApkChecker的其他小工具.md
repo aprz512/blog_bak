@@ -1,5 +1,7 @@
 ---
 title: 011-Matrix源码分析：ApkChecker的其他小工具
+index_img: /cover/3.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-3
 categories: Matrix
 ---

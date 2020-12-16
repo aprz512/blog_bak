@@ -1,5 +1,7 @@
 ---
 title: 网络编程007：QUIC协议
+index_img: /cover/22.jpg
+banner_img: /cover/top.jpg
 date: 2020-6-22
 categories: 网络优化
 ---

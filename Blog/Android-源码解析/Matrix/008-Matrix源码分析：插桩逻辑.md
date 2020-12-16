@@ -1,5 +1,7 @@
 ---
 title: 008-Matrix源码分析：插桩逻辑
+index_img: /cover/12.jpg
+banner_img: /cover/top.jpg
 date: 2020-7-12
 categories: Matrix
 ---

@@ -1,5 +1,7 @@
 ---
 title: 013-Matrix源码分析：检测Activity内存泄漏
+index_img: /cover/17.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-17
 categories: Matrix
 ---

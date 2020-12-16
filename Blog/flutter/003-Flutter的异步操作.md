@@ -1,5 +1,7 @@
 ---
 title: 003-Flutter的异步操作
+index_img: /cover/5.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-5
 categories: Flutter
 ---

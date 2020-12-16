@@ -1,5 +1,7 @@
 ---
 title: 001-Dart语法捡漏
+index_img: /cover/4.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-4
 categories: Flutter
 ---

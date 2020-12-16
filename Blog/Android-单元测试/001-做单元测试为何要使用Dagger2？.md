@@ -1,5 +1,7 @@
 ---
 title: 001-做单元测试为何要使用Dagger2？
+index_img: /cover/17.jpg
+banner_img: /cover/top.jpg
 date: 2020-3-17
 tags: Android-单元测试
 ---

@@ -1,5 +1,7 @@
 ---
 title: 0002-自定义LayoutHelper
+index_img: /cover/17.jpg
+banner_img: /cover/top.jpg
 date: 2019-9-17
 tags: Android源码分析-vLayout
 categories: vLayout

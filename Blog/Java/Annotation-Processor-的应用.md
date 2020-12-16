@@ -1,5 +1,7 @@
 ---
 title: Annotation Processor 的应用
+index_img: /cover/29.jpg
+banner_img: /cover/top.jpg
 date: 2019-09-29
 tags: Java-AnnotationProcessor
 categories: AnnotationProcessor

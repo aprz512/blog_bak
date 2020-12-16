@@ -1,5 +1,7 @@
 ---
 title: 006-Flutter的状态管理
+index_img: /cover/10.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-10
 categories: Flutter
 ---

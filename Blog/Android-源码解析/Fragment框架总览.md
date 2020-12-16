@@ -1,5 +1,7 @@
 ---
 title: Fragment框架总览
+index_img: /cover/1.jpg
+banner_img: /cover/top.jpg
 date: 2020-1-1
 categories: Android-源码解析
 ---

@@ -1,5 +1,7 @@
 ---
 title: 网络编程004：理解HTTP协议
+index_img: /cover/16.jpg
+banner_img: /cover/top.jpg
 date: 2020-6-16
 categories: 网络优化
 ---

@@ -1,5 +1,7 @@
 ---
 title: 006-Matrix源码分析：FrameTracer 监控帧率
+index_img: /cover/6.jpg
+banner_img: /cover/top.jpg
 date: 2020-7-6
 categories: Matrix
 ---

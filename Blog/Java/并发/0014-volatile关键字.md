@@ -1,5 +1,7 @@
 ---
 title: 0014-volatile关键字
+index_img: /cover/20.jpg
+banner_img: /cover/top.jpg
 date: 2019-8-20
 tags: Java-并发
 categories: 并发

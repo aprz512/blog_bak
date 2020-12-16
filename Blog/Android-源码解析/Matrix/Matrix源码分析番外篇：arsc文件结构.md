@@ -1,5 +1,7 @@
 ---
 title: Matrix源码分析番外篇：arsc文件结构
+index_img: /cover/15.jpg
+banner_img: /cover/top.jpg
 date: 2020-7-15
 categories: Matrix
 ---

@@ -1,5 +1,7 @@
 ---
 title: 0010-与 RxJava 配合使用
+index_img: /cover/11.jpg
+banner_img: /cover/top.jpg
 date: 2019-9-11
 tags: Android源码解析-Tangram
 categories: Tangram

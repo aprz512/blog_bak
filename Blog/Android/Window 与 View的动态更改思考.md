@@ -1,5 +1,7 @@
 ---
 title: Window 与 View的动态更改思考
+index_img: /cover/18.jpg
+banner_img: /cover/top.jpg
 date: 2019-08-18
 categories: Android
 ---

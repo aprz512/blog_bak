@@ -1,5 +1,7 @@
 ---
 title: 003-Matrix源码分析：方法监控
+index_img: /cover/1.jpg
+banner_img: /cover/top.jpg
 date: 2020-7-1
 categories: Matrix
 ---
