@@ -1,6 +1,6 @@
 ---
 title: Android V1 V2 签名机制
-date: 2019-08-18 11：11：11
+date: 2019-08-18
 categories: Android
 ---
 

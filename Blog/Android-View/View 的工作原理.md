@@ -1,6 +1,6 @@
 ---
 title: View 的工作原理
-date: 2019-08-18 11：11：11
+date: 2019-08-18
 tags: Android-View
 ---
 

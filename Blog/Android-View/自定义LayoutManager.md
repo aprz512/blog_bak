@@ -1,6 +1,6 @@
 ---
 title: 自定义LayoutManager
-date: 2019-08-18 11：11：11
+date: 2019-08-18
 tags: Android-View
 ---
 

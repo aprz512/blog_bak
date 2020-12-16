@@ -1,6 +1,6 @@
 ---
 title: Navigation 的使用记录
-date: 2019-08-18 11：11：11
+date: 2019-08-18
 tags: Jetpack
 ---
 

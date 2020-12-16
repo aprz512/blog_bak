@@ -1,6 +1,6 @@
 ---
 title: Drawable 介绍
-date: 2019-08-18 11：11：11
+date: 2019-08-18
 tags: Android-View
 ---
 

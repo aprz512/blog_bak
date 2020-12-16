@@ -1,6 +1,6 @@
 ---
 title: ViewGroup 的 generateLayoutParams 方法的作用
-date: 2019-08-18 11：11：11
+date: 2019-08-18
 tags: Android-View
 ---
 

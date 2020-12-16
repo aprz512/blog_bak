@@ -1,6 +1,6 @@
 ---
 title: Android进程与应用的生命周期
-date: 2019-08-18 11：11：11
+date: 2019-08-18
 tags: Android-汉化
 ---
 

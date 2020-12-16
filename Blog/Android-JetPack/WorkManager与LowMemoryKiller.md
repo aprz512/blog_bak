@@ -1,6 +1,6 @@
 ---
 title: WorkManager 与 LowMemoryKiller 理解
-date: 2019-08-18 11：11：11
+date: 2019-08-18
 tags: Jetpack
 ---
 
