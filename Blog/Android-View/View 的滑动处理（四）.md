@@ -1,5 +1,5 @@
 ---
-androidx.core.view.NestedScrollingChildHelper#mNestedScrollingParentTouchtitle: View 的滑动处理（四）
+title: View 的滑动处理（四）
 index_img: /cover/21.jpg
 banner_img: /cover/top.jpg
 date: 2020-12-21
@@ -206,13 +206,13 @@ androidx.core.view.NestedScrollingChildHelper#mNestedScrollingParentTouch
 
 ```
 androidx.recyclerview.widget.RecyclerView#onTouchEvent
-androidx.recyclerview.widget.RecyclerView#scrollByInternal
-androidx.recyclerview.widget.RecyclerView#dispatchNestedScroll(int, int, int, int, int[], int)
-androidx.core.view.NestedScrollingChildHelper#dispatchNestedScroll(int, int, int, int, int[], int, int[])
-androidx.core.view.NestedScrollingChildHelper#dispatchNestedScrollInternal
-androidx.core.view.ViewParentCompat#onNestedScroll(android.view.ViewParent, android.view.View, int, int, int, int, int, int[])
-android.view.ViewParent#onNestedScroll
-android.widget.ScrollView#onNestedScroll
+->androidx.recyclerview.widget.RecyclerView#scrollByInternal
+-->androidx.recyclerview.widget.RecyclerView#dispatchNestedScroll(int, int, int, int, int[], int)
+--->androidx.core.view.NestedScrollingChildHelper#dispatchNestedScroll(int, int, int, int, int[], int, int[])
+---->androidx.core.view.NestedScrollingChildHelper#dispatchNestedScrollInternal
+----->androidx.core.view.ViewParentCompat#onNestedScroll(android.view.ViewParent, android.view.View, int, int, int, int, int, int[])
+------>android.view.ViewParent#onNestedScroll
+------->android.widget.ScrollView#onNestedScroll
 ```
 
 这样，一个嵌套滑动的流程就完成了。
