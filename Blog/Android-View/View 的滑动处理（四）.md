@@ -3,8 +3,7 @@ title: View 的滑动处理（四）
 index_img: /cover/21.jpg
 banner_img: /cover/top.jpg
 date: 2020-12-21
-tags: Android-View
-categories: View 的滑动
+categories: View
 ---
 
 看下面这个布局：
