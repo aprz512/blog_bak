@@ -173,5 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
 所以，最终测试的结果是：子线程也可以更新UI，但是还是有很多限制，比如 activity 就很难做到，因为 activityThread 已经限制了创建 ViewRootImpl 的线程在主线程。
 
-总的来说，只有主线程可以更新UI这句话**大体上还是对的**。
+总的来说，只有主线程可以更新UI这句话**大体上还是对的**，但是有两种例外：
 
+- 在 View tree 还没有创建出来的时候，是可以在子线程更新的，比如 setText 等操作，这是因为，ViewRootImpl 还没有创建出来，自然也就不会报错。而且它子所以可以更新成功，也是由于 setText 方法储存了 set 的值。
+- 在子线程X里面创建了 ViewRootImpl ，自然可以在子线程X里面更新UI
