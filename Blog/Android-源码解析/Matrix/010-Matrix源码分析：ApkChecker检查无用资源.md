@@ -1,6 +1,8 @@
 ---
 title: 010-Matrix源码分析：ApkChecker检查无用资源
 categories: Matrix
+index_img: /cover/30.jpg
+banner_img: /cover/top.jpg
 date: 2020-7-30
 ---
 

@@ -1,5 +1,7 @@
 ---
 title: 动态代理与InvocationHandler
+index_img: /cover/3.jpg
+banner_img: /cover/top.jpg
 date: 2020-4-3
 categories: Android
 ---

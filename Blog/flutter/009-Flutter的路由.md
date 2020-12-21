@@ -1,5 +1,7 @@
 ---
 title: 009-Flutter的路由
+index_img: /cover/10.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-10
 categories: Flutter
 ---

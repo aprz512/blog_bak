@@ -1,5 +1,7 @@
 ---
 title: 002-Flutter控件捡漏
+index_img: /cover/5.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-5
 categories: Flutter
 ---

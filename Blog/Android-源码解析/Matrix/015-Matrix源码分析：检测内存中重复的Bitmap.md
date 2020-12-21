@@ -1,5 +1,7 @@
 ---
 title: 015-Matrix源码分析：检测内存中重复的Bitmap
+index_img: /cover/19.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-19
 categories: Matrix
 ---

@@ -1,5 +1,7 @@
 ---
 title: Java虚拟机捡漏
+index_img: /cover/25.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-25
 categories: JVM
 ---

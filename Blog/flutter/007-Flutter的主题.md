@@ -1,5 +1,7 @@
 ---
 title: 007-Flutter的主题
+index_img: /cover/10.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-10
 categories: Flutter
 ---

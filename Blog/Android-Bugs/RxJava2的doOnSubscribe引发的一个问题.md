@@ -1,5 +1,7 @@
 ---
 title: RxJava2的doOnSubscribe引发的一个问题
+index_img: /cover/01.jpg
+banner_img: /cover/top.jpg
 date: 2020-04-01
 tags: Android-Bugs
 ---

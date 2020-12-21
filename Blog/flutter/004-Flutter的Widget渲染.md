@@ -1,5 +1,7 @@
 ---
 title: 004-Flutter的Widget渲染
+index_img: /cover/11.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-11
 categories: Flutter
 ---

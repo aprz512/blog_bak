@@ -1,5 +1,7 @@
 ---
 title: 0042-最短路径之Dijkstra算法
+index_img: /cover/22.jpg
+banner_img: /cover/top.jpg
 date: 2019-9-22
 tags: 算法-大话数据结构
 categories: 大话数据结构

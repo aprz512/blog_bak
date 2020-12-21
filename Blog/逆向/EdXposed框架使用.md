@@ -1,5 +1,7 @@
 ---
 title: EdXposed框架使用
+index_img: /cover/8.jpg
+banner_img: /cover/top.jpg
 date: 2020-9-8
 categories: 逆向
 ---

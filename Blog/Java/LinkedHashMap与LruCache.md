@@ -1,6 +1,8 @@
 ---
 title: LinkedHashMap与LruCache
 tags: Java
+index_img: /cover/11.jpg
+banner_img: /cover/top.jpg
 date: 2020-4-11
 ---
 

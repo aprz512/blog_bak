@@ -1,5 +1,7 @@
 ---
 title: fat-aar的踩坑之旅
+index_img: /cover/8.jpg
+banner_img: /cover/top.jpg
 date: 2020-12-8
 categories: Android
 ---

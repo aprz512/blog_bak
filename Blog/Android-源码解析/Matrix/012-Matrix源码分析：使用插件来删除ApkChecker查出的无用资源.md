@@ -1,5 +1,7 @@
 ---
 title: 012-Matrix源码分析：使用插件来删除ApkChecker查出的无用资源
+index_img: /cover/12.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-12
 categories: Matrix
 ---

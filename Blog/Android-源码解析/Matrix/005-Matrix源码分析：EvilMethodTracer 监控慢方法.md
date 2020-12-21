@@ -1,5 +1,7 @@
 ---
 title: 005-Matrix源码分析：EvilMethodTracer 监控慢方法
+index_img: /cover/5.jpg
+banner_img: /cover/top.jpg
 date: 2020-7-5
 categories: Matrix
 ---

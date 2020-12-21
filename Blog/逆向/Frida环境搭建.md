@@ -1,5 +1,7 @@
 ---
 title: Frida环境搭建
+index_img: /cover/9.jpg
+banner_img: /cover/top.jpg
 date: 2020-9-9
 categories: 逆向
 ---

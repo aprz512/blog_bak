@@ -1,5 +1,7 @@
 ---
 title: 014-Matrix源码分析：使用haha库找出泄漏的引用链
+index_img: /cover/18.jpg
+banner_img: /cover/top.jpg
 date: 2020-8-18
 categories: Matrix
 ---

@@ -1,5 +1,7 @@
 ---
 title: 001-Matrix源码分析：LooperMonitor 监测基石
+index_img: /cover/06.jpg
+banner_img: /cover/top.jpg
 date: 2020-4-06
 categories: Matrix
 ---

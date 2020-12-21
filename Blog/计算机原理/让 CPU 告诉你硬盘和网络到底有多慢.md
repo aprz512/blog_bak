@@ -1,5 +1,7 @@
 ---
 title: 让 CPU 告诉你硬盘和网络到底有多慢
+index_img: /cover/18.jpg
+banner_img: /cover/top.jpg
 date: 2019-08-18
 categories: 计算机原理
 ---

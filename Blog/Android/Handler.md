@@ -1,5 +1,7 @@
 ---
 title: Handler
+index_img: /cover/25.jpg
+banner_img: /cover/top.jpg
 date: 2019-09-25
 categories: Android
 ---

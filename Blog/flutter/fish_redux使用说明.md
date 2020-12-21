@@ -1,5 +1,7 @@
 ---
 title: fish-redux使用说明
+index_img: /cover/11.jpg
+banner_img: /cover/top.jpg
 date: 2020-9-11
 categories: Flutter
 ---

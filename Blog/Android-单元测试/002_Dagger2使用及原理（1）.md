@@ -1,6 +1,8 @@
 ---
 title: 002_Dagger2使用及原理（1）
-date: 2020-3-17 19：12：29
+index_img: /cover/17.jpg
+banner_img: /cover/top.jpg
+date: 2020-3-17
 tags: Android-单元测试
 ---
 

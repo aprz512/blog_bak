@@ -1,5 +1,7 @@
 ---
 title: 017-Matrix源码分析：监测SQL语句中的问题
+index_img: /cover/2.jpg
+banner_img: /cover/top.jpg
 date: 2020-9-2
 categories: Matrix
 ---

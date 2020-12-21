@@ -1,5 +1,7 @@
 ---
 title: 002-Matrix源码分析：UIThreadMonitor监测主线程
+index_img: /cover/30.jpg
+banner_img: /cover/top.jpg
 date: 2020-6-30
 categories: Matrix
 ---
