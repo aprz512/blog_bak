@@ -619,3 +619,101 @@ PS：
 
 坑：不支持merge标签。布局根节点必须是 . 同时layout只能包含一个View标签. 不能直接包含\<merge>。
 
+
+
+### Databinding 生成的文件之间的关系
+
+ 每一个 xxx.xml 对应着两个文件，一个 xxxBinding 类，一个 xxxBindingImpl 类。
+
+#### XXXBinding 
+
+这个类里面存放的是xml里面的一些控件，以及 inflate 方法：
+
+```java
+public abstract class XXXBinding extends ViewDataBinding {
+    @NonNull
+    public final ImageView ivClose;
+  
+
+    public XXXBinding(Object var1, View var2, int var3, ImageView var4) {
+        super(var1, var2, var3);
+        this.ivClose = var4;
+
+    }
+
+    @NonNull
+    public static XXXBinding inflate(@NonNull LayoutInflater var0, @Nullable ViewGroup var1, boolean var2) {
+        return inflate(var0, var1, var2, DataBindingUtil.getDefaultComponent());
+    }
+
+    ...
+}
+
+```
+
+#### XXXBindingImpl
+
+xxxBindingImpl 继承了 xxxBinding 类，它主要是给父类的控件变量字段赋值，然后根据一些变量的标志位做控件的更新，上面有说，这里就不展开了。
+
+
+
+#### DataBinderMapperImpl
+
+上面说了，一个 xml 对应着两个文件，那么这个对应关系是谁储存的呢？答案就是这个 DataBinderMapperImpl 类。
+
+我们可以看一段代码：
+
+```java
+    public ViewDataBinding getDataBinder(DataBindingComponent var1, View var2, int var3) {
+        int var4;
+        if ((var4 = a.get(var3)) > 0) {
+            Object var5;
+            if ((var5 = var2.getTag()) == null) {
+                throw new RuntimeException("view must have a tag");
+            }
+
+            if (var4 == 1) {
+                if ("layout/a_common_pay_0".equals(var5)) {
+                    return new ACommonPayBindingImpl(var1, var2);
+                }
+
+                throw new IllegalArgumentException("The tag for a_common_pay is invalid. Received: " + var5);
+            }
+
+            if (var4 == 2) {
+                if ("layout/a_activity_wallet_pay_0".equals(var5)) {
+                    return new AActivityWalletPayBindingImpl(var1, var2);
+                }
+
+                throw new IllegalArgumentException("The tag for a_activity_wallet_pay is invalid. Received: " + var5);
+            }
+        }
+
+        return null;
+    }
+```
+
+从，这个方法里面可以看出，它们的对应关系是使用字符串对应的，一个 xml 有一个固定的字符串，这个字符串又对应了 xxxBindingImpl 这个类。
+
+但是，还有一个问题，这个 DataBinderMapperImpl 只是储存了自己 module 的映射关系，那它依赖的工程的映射关系，该怎么获取呢？
+
+其实这个类还有一个方法：
+
+```java
+  @Override
+  public List<DataBinderMapper> collectDependencies() {
+    ArrayList<DataBinderMapper> result = new ArrayList<DataBinderMapper>(18);
+    result.add(new androidx.databinding.library.baseAdapters.DataBinderMapperImpl());
+	...
+    return result;
+  }
+```
+
+这个 collectDependencies 会收集各个依赖工程的 DataBinderMapperImpl 将它放到这里（aar的话，会根据里面的 databinding 的 bin 文件生成），最终会形成一个树状结构。
+
+我们从app看起，app 的话会收集它直接依赖的子工程的 DataBinderMapperImpl，然后子工程也会收集它自己直接依赖的工程的 DataBinderMapperImpl ，这样就形成了一棵树，每个 xml 的对应的关系都被穿起来了，所以使用 DataBindingUtil 就可以获取到对应的实现类。
+
+
+
+以上说到的相关文件，都可以在 build/ap_generated_sources （gradle 3.6.4） 里面找到。
+
