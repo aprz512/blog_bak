@@ -3,7 +3,7 @@ title: RxJava2的doOnSubscribe引发的一个问题
 index_img: /cover/01.jpg
 banner_img: /cover/top.jpg
 date: 2020-04-01
-tags: Android-Bugs
+categories: bugs
 ---
 
 接到一个需求，需要对一个旧功能做改动，由于网络部分的逻辑都很模板化（想念retrofit），所以我直接从别的地方copy了一份，在这里改吧改吧就运行了。但是运行时报错，**报了在子线程访问UI的异常**。这个异常很常见，也很好理解。

@@ -3,7 +3,7 @@ title: 在 Activity 的 onDestroy 方法里面调用 finish 会发生什么
 index_img: /cover/18.jpg
 banner_img: /cover/top.jpg
 date: 2019-08-18
-tags: Android-Bugs
+categories: bugs
 ---
 
 
