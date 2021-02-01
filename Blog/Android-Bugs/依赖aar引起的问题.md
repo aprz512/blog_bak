@@ -169,3 +169,11 @@ DexingWithClasspathTransform (Thread[Execution worker for ':' Thread 3,5,main]) 
 这个结果还是符合我的猜想的，那就是使用第一种aar依赖方式的时候，libs 里面的 aar 包并不会经过 DexingWithClasspathTransform 的处理。
 
 所以，这两种依赖 aar 的方式，还是有点区别的。
+
+
+
+### 最后得问题
+
+使用第二种aar依赖方式，点击 run 三角按钮，却不会报错？？？ 这又是为啥？
+
+看 console 里面，点击 run 按钮，也是执行的 assemble 命令，但是我们手动执行，却不行，这个暂时没搞清楚。
