@@ -6,6 +6,10 @@ date: 2020-12-21
 categories: View
 ---
 
+> 这个例子可能举得不太恰当，应该用 NestedScrollView距离，因为在不同的版本上，下面的例子有不同的滑动效果。
+>
+> 例子基于 API 28
+
 看下面这个布局：
 
 ```xml
@@ -58,11 +62,89 @@ categories: View
 
 按照事件拦截机制来看，当 RecyclerView 滑动到底部的时候，应该就不能滑动了，而且 ScrollView 也无法滑动才对。
 
-但是实际行为却不是这样的，实际上它们的滑动效果可以无缝链接，当 RecyclerView 滑动到底部的时候，继续滑动时，ScrollView 会滑动。这震惊了我，决定看看源码，看看到底是怎么回事，这单纯用事件拦截机制是无法解释的。
+但是实际行为却不是这样的，实际上它们的滑动效果可以无缝链接，当 RecyclerView 滑动到底部的时候，继续滑动时，ScrollView 会滑动。惊了，决定看看源码，看看到底是怎么回事，这单纯用事件拦截机制是无法解释的。除非这两个控件强耦合。
 
-因为 ScrollView 与 RecyclerView 是没什么关系的，除非 ScrollView 能判断 RecyclerView 滑动到了底部，然后拦截事件，自己再处理滑动事件。这样逻辑就缠绕到一起了，显然不可能。
 
-在第一篇里面，我们是介绍了嵌套滑动的相关概念，这里就很像嵌套滑动，但是我看了类之间的关系，发现 ScrollView 根本没有实现相关接口，这就又没了线索，所以只能使用老办法，一点一点的看 RecyclerView 是如何处理滑动事件的，然后追踪可疑的地方。
+
+那么，现在有几个问题是无法解释的：
+
+- 滑动 RecyclerView 的时候，为什么不是 ScrollView 拦截这个滑动事件？它是怎么做到的？
+- RecyclerView 滑动到底部的时候，ScrollView 是如何接着滑动的？
+
+
+
+### 第一个问题
+
+我们看 ScrollView 的 `android.widget.ScrollView#onInterceptTouchEvent` 方法：
+
+> android.widget.ScrollView#onInterceptTouchEvent
+
+```java
+        if ((action == MotionEvent.ACTION_MOVE) && (mIsBeingDragged)) {
+            return true;
+        }
+```
+
+它决定是否拦截事件，主要取决于 `mIsBeingDragged` 这个变量。由于在这个滑动事件中，ScrollView 只会走 onInterceptTouchEvent 这个方法，所以我们只用看这个方法里面的逻辑，它里面 mIsBeingDragged 的赋值逻辑如下：
+
+```java
+            case MotionEvent.ACTION_MOVE: {
+                final int y = (int) ev.getY(pointerIndex);
+                final int yDiff = Math.abs(y - mLastMotionY);
+                if (yDiff > mTouchSlop && (getNestedScrollAxes() & SCROLL_AXIS_VERTICAL) == 0) {
+                    mIsBeingDragged = true;
+```
+
+可以看到，mIsBeingDragged 的值取决于 getNestedScrollAxes() 这个方法的值。
+
+那么，这个`getNestedScrollAxes() & SCROLL_AXIS_VERTICAL) == 0` 条件啥时候为 true 呢？答案是当 ``getNestedScrollAxes()`不等于 SCROLL_AXIS_VERTICAL 的时候，也就是**嵌套滑动方向不是竖直滑动的时候**。
+
+那么，我们看这个方法的逻辑：
+
+> android.view.ViewGroup#getNestedScrollAxes
+
+```java
+    public int getNestedScrollAxes() {
+        return mNestedScrollAxes;
+    }
+```
+
+简单的返回了一个成员变量，看他在哪里赋值的：
+
+```
+android.view.ViewGroup#onNestedScrollAccepted
+-androidx.core.view.ViewParentCompat#onNestedScrollAccepted(android.view.ViewParent, android.view.View, android.view.View, int, int)
+--androidx.core.view.NestedScrollingChildHelper#startNestedScroll(int, int)
+---androidx.recyclerview.widget.RecyclerView#startNestedScroll(int, int)
+----androidx.recyclerview.widget.RecyclerView#onInterceptTouchEvent
+
+----androidx.recyclerview.widget.RecyclerView#onTouchEvent
+```
+
+跟着这个调用链，可以知道，当 RecyclerView 的 onTouchEvent 方法执行的时候，就赋值为 `SCROLL_AXIS_VERTICAL`。
+
+```java
+                int nestedScrollAxis = ViewCompat.SCROLL_AXIS_NONE;
+                if (canScrollHorizontally) {
+                    nestedScrollAxis |= ViewCompat.SCROLL_AXIS_HORIZONTAL;
+                }
+                if (canScrollVertically) {
+                    nestedScrollAxis |= ViewCompat.SCROLL_AXIS_VERTICAL;
+                }
+                startNestedScroll(nestedScrollAxis, TYPE_TOUCH);
+```
+
+所以，ScrollView 的 mIsBeingDragged 一直为 false，它就不拦截事件。
+
+整个流程就是：
+
+- down 事件产生，传递到 recyclerView，recyclerView 的 child 没有能消费这个事件的，它自己处理了，调用到它自己的  onTouchEvent 方法
+- 通过 NestedScrolling 的一些接口，通知父控件嵌套滑动方向为 SCROLL_AXIS_VERTICAL
+- move 事件到来时，由于嵌套滑动方向是竖直的，ScrollView 就不拦截
+
+### 第二个问题
+
+在第一篇里面，我们是介绍了嵌套滑动的相关概念，这里就很像嵌套滑动。
 
 然后看到了这样的调用链：
 
@@ -105,6 +187,20 @@ androidx.recyclerview.widget.RecyclerView#onTouchEvent
 我们先看注释①：
 
 问题一：RecyclerView 是如何知道 ScrollView 是 parent 的？
+
+> androidx.core.view.NestedScrollingChildHelper#getNestedScrollingParentForType
+
+```java
+    private ViewParent getNestedScrollingParentForType(@NestedScrollType int type) {
+        switch (type) {
+            case TYPE_TOUCH:
+                return mNestedScrollingParentTouch;
+            case TYPE_NON_TOUCH:
+                return mNestedScrollingParentNonTouch;
+        }
+        return null;
+    }
+```
 
 追踪链如下：
 

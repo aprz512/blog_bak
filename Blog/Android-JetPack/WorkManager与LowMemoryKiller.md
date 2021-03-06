@@ -6,7 +6,7 @@ date: 2019-08-18
 tags: Jetpack
 ---
 
-
+### Service
 
 今天在查看bugly的时候，发现了如下错误：
 
@@ -137,27 +137,26 @@ Low memory killer的规则就是根据当前系统的可用内存多少来获取
 
 
 
-## WorkManager ： Just because work should be easy to do.
+### WorkManager 
 
-> WorkManager可以简化开发人员的工作，它提供了一流的api。
->
-> 它适用于即使应用程序不再位于前台也应运行的后台作业。
->
-> 在可能的情况下，它使用JobScheduler或Firebase JobDispatcher来完成工作。
->
-> 如果你的应用程序在前台，它甚至会尝试直接在你的进程中完成工作。
+#### 特点与使用场景
 
+**特点：**
 
+1. 保证任务一定会被执行
+   WorkManager有自己的数据库，每一个任务的信息与任务状态，都会保存在本地数据库中。所以即使程序没有在运行，或者在设备重启等情况下，WorkManager依然可以保证任务的执行，只是不保证任务立即被执行。
+2. 合理使用设备资源
+   在执行很多周期性或非立即执行的任务时，WorkManager提供我们API，帮助我们合理利用设备资源，避免不必要的内存，流量，电量等消耗。
 
-**WorkManger 的使用可以查看最后面的官方文档，讲的非常详细，这里并不介绍。**
+**适用场景：**
 
+1. 可延迟进行的任务
+   a.满足某些条件才执行的任务，如需要在充电时才执行的任务。
+   b.用户无感知或可延迟感知的任务，如同步配置信息，同步资源，同步通讯录等。
+2. 定期重复性任务，但时效性要求不高的，如定期log上传，数据备份等。
+3. 退出应用后还应继续执行的未完成任务。
 
-
-WorkManger 的体系结构如下：
-
-![](https://github.com/aprz512/pic4aprz512/blob/master/Blog/Android-JetPack/WorkManager/1_VkznGM_XrSK9kmOujJCV6w.png?raw=true)
-
-可以看到，WorkManger 在 enqueue work 的时候，将 work 保存到了数据库中（使用 room），用于满足条件之后再执行。所以，如果遇到报数据库相关的错误，而你的项目又没有相关代码，记得检查这里。
+可以看出，WorkManger 与 Service 的使用场景并不完全重合。比如，我们的应用像采集用户的 GPS 信息，在旧 Android 时代，是一个很轻松的事情，做个保活就可以了，但是现在，Service 有了很大的限制，而且国产 ROM 也不允许app在后台运行太长时间（5分钟，不能再多了）。现在虽然出了  WorkManager，但是它也无法实现这个功能，因为，它不保证任务立即被执行，这样的话，采集出来的数据没有意义。
 
 
 
