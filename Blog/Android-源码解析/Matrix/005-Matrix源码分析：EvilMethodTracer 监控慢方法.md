@@ -101,7 +101,7 @@ doFrame 项里面的参数都是 ns，所以他们都是正常范围的。
 1048574,1,android.os.Handler dispatchMessage (Landroid.os.Message;)V
 ```
 
-与堆栈一对应，发现就是我们例子的调用。
+与堆栈一对应，发现就是我们例子的方法。
 
 仔细想一下，这个的工作原理应该是与 AnrTracer 是一样的，都是以单个 message 为单位，分析所有调用的函数，然后生成堆栈信息。
 
@@ -206,3 +206,13 @@ doFrame 项里面的参数都是 ns，所以他们都是正常范围的。
 这里差不多与 AnrTracer 一样的流程，因该很好看懂，就不多说了。
 
 其实只要理清核心之处就好了，AnrTracer 是延迟5s发送分析任务，EvilMethodTracer 是每个消息处理结束后分析，但是它设定了阈值。
+
+### 总结
+
+在每个 Message 处理的时候，检测了两个方法调用的时间间隔：
+
+- dispatchBegin 记录一个时间
+- dispatchEnd 记录一个时间
+
+如果这两个时间超过了 700ms，那么就分析这两个时间段之间的 long 数组，然后分析堆栈与耗时。
+

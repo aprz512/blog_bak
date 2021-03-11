@@ -343,3 +343,14 @@ public class MethodItem {
 哦，对了，还有一个较重要的函数：`com.tencent.matrix.trace.util.TraceDataUtils#getTreeKey(java.util.List<com.tencent.matrix.trace.items.MethodItem>, long)`
 
 这个就是为堆栈生成一个 key，因为上报到后台，没有一个 key 的话很麻烦，而且将堆栈简化为key，可以更容易的做处理。具体就是：分析出主要耗时的那一级函数，作为代表卡顿堆栈的key。就是上图的下半部分。
+
+### 总结
+
+如果主线程中的一个Message的处理超过了 5000ms，那么既有可能会发生 anr，所以我们可以这样做：
+
+- 在 dispatchBegin 的时候，记录一下 long 数组的索引（以 post 延迟5s消息的方式）
+- 在 dispatchEnd 的时候，记录一下 long 数组的索引（将消息移除，如果间隔超过了5s，就会执行下面的逻辑）
+- 拿到这两个索引之间的数据，然后分析调用堆栈以及耗时
+
+
+

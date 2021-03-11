@@ -185,3 +185,11 @@ notifyListener 就是将该消息的耗时，丢了多少帧，当前 activity �
 ```
 
 FrameDecorator 其实就显示了一个帧率，只不过使用悬浮窗现实的。
+
+
+
+### 总结
+
+如果一个 Message 处理的时候间隔小于 16.7ms，那么就可以认为它的帧率为 60fps，反之大于这个时间间隔，那么就说明掉帧了。
+
+其实，还可以使用 Choreographer 的 FrameCallback 来检测帧率。

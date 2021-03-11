@@ -386,3 +386,11 @@ CollectJarTask
 https://github.com/aprz512/matrix/tree/note
 
 注意，这是 note 分支。
+
+### 总结
+
+拿到项目的所有的  class，拿到所有的方法，去掉需要忽略的方法，然后对方法进行插桩：
+
+- 方法前面插入 i
+- 方法后面插入 o
+- 如果是 activity 还要在 它的 WindowFocusChange 方法里面插入 at  方法。

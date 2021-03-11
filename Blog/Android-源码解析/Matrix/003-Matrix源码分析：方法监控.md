@@ -288,3 +288,10 @@ hook Hanlder 一般使用 callback 的方式，不清楚的可以看下消息分
 
 还记录了 application 的启动情况，原理是，如果是第一次启动一个 activity，那么记录当前时间，这个时间就当成 application 创建完成的时间，还记录了启动场景，因为启动APP的，可以有 Activity，Service，BroadcastReceiver 等。
 
+### 总结
+
+检测UI线程方法耗时的原理：在每个方法的前后都插入 i / o 方法。
+
+i / o 方法里面会记录当前方法的 id，当前方法执行的时间。这些信息都储存在一个 long 型变量里面，最后所有的方法形成一个 long 型数组。
+
+我们可以获取 long 型数组里面的 Message 执行的那一段数据，然后就可以获取到方法调用堆栈，以及每个方法的耗时情况。

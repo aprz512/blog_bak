@@ -259,7 +259,12 @@ dispatchTimeMs[1] 是手机从启动到现在的时间，dispatchTimeMs[0] 对�
 
 这两方法啊就是设置队列的运行状态，计算队列的执行耗时。
 
-最后总结，这个类做了两件事：
+### 总结
 
-- 记录了3个队列的耗时
-- 提供了 LooperObserver 回调，doFrame回调可以获取到 doFrame（Choreographer）的耗时，也可以知道每个消息处理的耗时（dispatchEnd）。
+在主线程的消息队列里面，我们主要分析的是由 doFrame 构成的消息。该消息主要由3个队列组成：
+
+- input
+- animation
+- traversal
+
+往这3个队列里面的头部插入一个自定义的 callback，这样我们就可以记录这3个队列的执行耗时。
