@@ -370,11 +370,88 @@ pendingIdleHandlerCount = 0;
 
 可以看一下[这篇文章](https://blog.csdn.net/tencent_bugly/article/details/78395717)的使用。
 
+有一个需要注意的地方，如果我们设置了 IdleHandler，而且在它的 `queueIdle`方法的返回值里面返回了 true。那么当消息队列为空的时候，这个方法会被不断的回调吗？
+
+答案是不是，也只会被回调一次。但是当消息队列再次为空时，会被回调。我们看看源码：
+
+```java
+@UnsupportedAppUsage
+Message next() {
+    
+	// 开始的时候，对这两个变量赋值
+	// 表示没有 IdleHandler
+    int pendingIdleHandlerCount = -1;
+    // 睡眠时间为 0
+    int nextPollTimeoutMillis = 0;
+    for (;;) {
+        
+        nativePollOnce(ptr, nextPollTimeoutMillis);
+
+        synchronized (this) {
+            // 消息队列不为空
+            if (msg != null) {
+                ...
+            } else {
+                // 消息队列为空，表示无限制睡眠，等待唤醒
+                nextPollTimeoutMillis = -1;
+            }
+
+            ...
+
+            // 第一次循环进来，pendingIdleHandlerCount 的值为 -1
+            // 然后判断消息队列是否为空（无消息或者无可执行消息）
+            // 为空，就给 pendingIdleHandlerCount 赋值
+            if (pendingIdleHandlerCount < 0
+                    && (mMessages == null || now < mMessages.when)) {
+                pendingIdleHandlerCount = mIdleHandlers.size();
+            }
+            // 没有 IdleHandler，直接继续循环
+            if (pendingIdleHandlerCount <= 0) {
+                // No idle handlers to run.  Loop and wait some more.
+                mBlocked = true;
+                continue;
+            }
+
+            ...
+        }
+
+        // 调用 queueIdle 方法
+        for (int i = 0; i < pendingIdleHandlerCount; i++) {
+            ...
+            try {
+                keep = idler.queueIdle();
+            } catch (Throwable t) {
+                Log.wtf(TAG, "IdleHandler threw exception", t);
+            }
+			// 如果 queueIdle 返回了 false，就移除监听
+            if (!keep) {
+                synchronized (this) {
+                    mIdleHandlers.remove(idler);
+                }
+            }
+        }
+
+        // 重置变量，这里将 pendingIdleHandlerCount 赋值为 0
+        // 那么，下一次循环的时候，由于将睡眠时间设置为了0
+        // 但是仍然没有消息，但是 pendingIdleHandlerCount 为 0，那么就不会进入 queueIdle 的回调逻辑
+        // 会进入无限制睡眠状态
+        pendingIdleHandlerCount = 0;
+        nextPollTimeoutMillis = 0;
+    }
+}
+```
+
+
+
 ### 同步分割栏
 
-所谓“同步分割栏”，可以被理解为一个特殊Message，它的target域为null。它不能通过sendMessageAtTime()等函数打入到消息队列里，而只能通过调用Looper的postSyncBarrier()来打入。
+所谓“同步分割栏”，可以被理解为一个**特殊Message**，它的target域为null。它不能通过sendMessageAtTime()等函数打入到消息队列里，而只能通过调用Looper的postSyncBarrier()来打入。
 
 “同步分割栏”是起什么作用的呢？它就像一个卡子，卡在消息链表中的某个位置，当消息循环不断从消息链表中摘取消息并进行处理时，一旦遇到这种“同步分割栏”，那么即使在分割栏之后还有若干已经到时的普通Message，也不会摘取这些消息了。请注意，此时只是不会摘取“普通Message”了，如果队列中还设置有“异步Message”，那么还是会摘取已到时的“异步Message”的。
+
+> 需要注意的一点是：
+>
+> 同步分隔栏插入到消息链表中的时候，也是按照时间的顺序来插入的。也就是说，如果分隔栏的时间是 10ms 后执行，那么从现在到10ms后的这个时间段，消息链表中的同步消息也能被执行。
 
 在Android的消息机制里，“普通Message”和“异步Message”也就是这点儿区别啦，也就是说，如果消息列表中根本没有设置“同步分割栏”的话，那么“普通Message”和“异步Message”的处理就没什么大的不同了。
 
