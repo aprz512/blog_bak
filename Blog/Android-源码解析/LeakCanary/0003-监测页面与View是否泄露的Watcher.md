@@ -255,5 +255,273 @@ ViewModelClearedWatcher.install(activity, reachabilityWatcher)
 
 
 
-### 监测 window 的根 view 的泄露
+### 监测 rootView 的泄露
+
+RootView 有多种：
+
+- PHONE_WINDOW
+
+  - Activity（我们已经监测了 activity，所以这个没必要）
+  - Dialog
+
+- POPUP_WINDOW
+
+  由于 popup_window 通常会被缓存，所以没必要监测，当它 dismiss 后，还可能再显示出来
+
+- TOOLTIP
+
+  Tooltips可以实现类似pc端网页鼠标悬停时出现描述信息的功能，而到安卓中，如果给一个控件使用了Tooltips，那么当用户长按这个控件时，我们预设的描述信息就会悬浮出现在控件附件某个位置。
+
+- TOAST
+
+所以，最后，Dialog，TOOLTIP，TOAST 是需要监测的对象。当然，leakCanary 里面还做了 `else` 逻辑处理，略。
+
+我们看它是在什么时候监测 rootView 的：
+
+> curtains.internal.WindowManagerSpy#swapWindowManagerGlobalMViews
+
+在分析这个方法之前，我们看一下这个方法的名字，因为后面的许多逻辑都是这个套路，为了不重复，这里只分析一遍。
+
+`swapWindowManagerGlobalMViews` 
+
+swap  是交换
+
+WindowManagerGlobal 是一个类，Framework 中的
+
+mViews 是 WindowManagerGlobal 的一个字段。
+
+很明显，这个方法的作用，是使用反射来替换掉 WindowManagerGlobal  的 mViews 字段。
+
+```kotlin
+  // You can discourage me all you want I'll still do it.
+  @SuppressLint("PrivateApi", "ObsoleteSdkInt", "DiscouragedPrivateApi")
+  fun swapWindowManagerGlobalMViews(swap: (ArrayList<View>) -> ArrayList<View>) {
+    if (SDK_INT < 19) {
+      return
+    }
+    try {
+      windowManagerInstance?.let { windowManagerInstance ->
+        mViewsField?.let { mViewsField ->
+          @Suppress("UNCHECKED_CAST")
+          val mViews = mViewsField[windowManagerInstance] as ArrayList<View>
+          mViewsField[windowManagerInstance] = swap(mViews)
+        }
+      }
+    } catch (ignored: Throwable) {
+      Log.w("WindowManagerSpy", ignored)
+    }
+  }
+```
+
+这个方法的注释也很有意思，你不让我搞，我还是要搞，我就是要出狂战斧！！！里面的逻辑就不细说了，就是反射。说个额外话题，就是为啥要 hook 这个字段呢？
+
+因为，view想要显示出来，需要将自己添加到 window上，而 window 是由 WMS 管理的，app 与 WMS 是通过 Binder 通信，app 端的代理就是 WindowManagerGlobal 这个对象。所以，每个 activity，dialog，toast 显示的时候，都需要经过 WindowManagerGlobal 的 addView 方法，而所有的添加的 view 都存放在了 WindowManagerGlobal  的 mViews 字段里面。
+
+这个方法的作用说清楚了，再说一下这个方法的构成，从它的名字，我们可以知道这个方法的作用，但是还需要注意的时，**这个方法的参数是一个 lambda 表达式。这个 lambda 表达式的参数，是该方法要替换的那个字段。**
+
+有点绕，但是好理解，因为有时候我们不仅仅是需要将字段替换一下，而是需要利用原来的字段值做一些处理之后再设置回去，这样，外部调用这个方法的时候，就可以直接使用 lambda 的参数即可。
+
+我们看看使用这个方法的地方：
+
+> curtains.internal.RootViewsSpy.Companion#install
+
+```kotlin
+    fun install(): RootViewsSpy {
+      return RootViewsSpy().apply {
+        WindowManagerSpy.swapWindowManagerGlobalMViews { mViews ->
+          delegatingViewList.apply { addAll(mViews) }
+        }
+      }
+    }
+```
+
+其实就是将 mViews 字段，替换为 delegatingViewList，delegatingViewList 将 mViews 里面的值 copy 过来了。这个方法里面的逻辑如此简单，相比奥妙必然在 delegatingViewList 里面。
+
+> curtains/internal/RootViewsSpy.kt:23
+
+```java
+  private val delegatingViewList = object : ArrayList<View>() {
+    override fun add(element: View): Boolean {
+      listeners.forEach { it.onRootViewsChanged(element, true) }
+      return super.add(element)
+    }
+
+    override fun removeAt(index: Int): View {
+      val removedView = super.removeAt(index)
+      listeners.forEach { it.onRootViewsChanged(removedView, false) }
+      return removedView
+    }
+  }
+```
+
+它重写了 list 的 add 与 removeAt 方法，在这两个方法执行的时候，调用了 listener 的对应方法。这个  listener 是在下面的方法处添加的：
+
+> leakcanary.RootViewWatcher#install
+
+```kotlin
+  override fun install() {
+    Curtains.onRootViewsChangedListeners += listener
+  }
+```
+
+看这个 listener 的实现：
+
+> leakcanary.RootViewWatcher#listener
+
+```kotlin
+  private val listener = OnRootViewAddedListener { rootView ->
+    val trackDetached = when(rootView.windowType) {
+      PHONE_WINDOW -> {
+        when (rootView.phoneWindow?.callback?.wrappedCallback) {
+          // Activities are already tracked by ActivityWatcher
+          is Activity -> false
+          is Dialog -> rootView.resources.getBoolean(R.bool.leak_canary_watcher_watch_dismissed_dialogs)
+          // Probably a DreamService
+          else -> true
+        }
+      }
+      // Android widgets keep detached popup window instances around.
+      POPUP_WINDOW -> false
+      TOOLTIP, TOAST, UNKNOWN -> true
+    }
+    if (trackDetached) {
+      rootView.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+
+        val watchDetachedView = Runnable {
+          reachabilityWatcher.expectWeaklyReachable(
+            rootView, "${rootView::class.java.name} received View#onDetachedFromWindow() callback"
+          )
+        }
+
+        override fun onViewAttachedToWindow(v: View) {
+          mainHandler.removeCallbacks(watchDetachedView)
+        }
+
+        override fun onViewDetachedFromWindow(v: View) {
+          mainHandler.post(watchDetachedView)
+        }
+      })
+    }
+  }
+```
+
+其实就是，为每个 rootView 都添加了一个 addOnAttachStateChangeListener 监听。在 onViewDetachedFromWindow 的时候，去监听这个对象是否泄露。
+
+
+
+### 监测 Service 的泄露
+
+service 的泄露监测点要稍微复杂一点，涉及到两个方面：
+
+- mH
+- ActivityManager
+
+> leakcanary.ServiceWatcher#install
+
+```kotlin
+// 替换 ActivityThread 里面 mH 的 callback 字段
+swapActivityThreadHandlerCallback { mCallback ->
+  // uninstall 的时候，需要将替换的字段替换回来
+  uninstallActivityThreadHandlerCallback = {
+    swapActivityThreadHandlerCallback {
+      mCallback
+    }
+  }
+  // 创建新的 callback 对象，替换原来的
+  Handler.Callback { msg ->
+    // 针对 STOP_SERVICE 消息进行处理
+    if (msg.what == STOP_SERVICE) {
+      val key = msg.obj as IBinder
+      // 从 activityThread 的 mServices 字段里面，拿到 Service 对象
+      activityThreadServices[key]?.let {
+        // 将 service 用弱引用包装后放入 map
+        onServicePreDestroy(key, it)
+      }
+    }
+    // 返回 false，继续走 handler 的 handleMessage 逻辑
+    mCallback?.handleMessage(msg) ?: false
+  }
+}
+```
+
+以  swap 方法开头的前面已经说过这个套路了，就不重复了，上面的代码就是 替换 ActivityThread 里面 mH 的 callback 字段。
+
+由于，我们监测的是 Service，hook 它的作用就是可以拿到 service 对应的 binder 对象，通过这个 binder 对象，我们就可以获取到对应的 Service，然后在监测这个 Service。
+
+上面的代码中，有个 `onServicePreDestroy` 方法，它就是将 binder 与 service 储存起来了。
+
+> leakcanary.ServiceWatcher#onServicePreDestroy
+
+```kotlin
+  private fun onServicePreDestroy(
+    token: IBinder,
+    service: Service
+  ) {
+    servicesToBeDestroyed[token] = WeakReference(service)
+  }
+```
+
+然后，找到真正 service 执行 onDestroy 的地方：
+
+> leakcanary.ServiceWatcher#install
+
+```kotlin
+
+      // 因为 handler 的 handleMessage 逻辑里面，会调用 ActivityManager.getService().serviceDoneExecuting() 方法
+      // 所以需要 hook ActivityManager，在这个方法里去监测 service 的泄露情况
+      swapActivityManager { activityManagerInterface, activityManagerInstance ->
+        // 卸载函数，同上
+        uninstallActivityManager = {
+          swapActivityManager { _, _ ->
+            activityManagerInstance
+          }
+        }
+        // 动态代理，hook ActivityManager 的 serviceDoneExecuting 方法
+        Proxy.newProxyInstance(
+          activityManagerInterface.classLoader, arrayOf(activityManagerInterface)
+        ) { _, method, args ->
+          if (METHOD_SERVICE_DONE_EXECUTING == method.name) {
+            val token = args!![0] as IBinder
+            if (servicesToBeDestroyed.containsKey(token)) {
+              // serviceDoneExecuting 方法的参数里面只有 token，所以在 onServicePreDestroy 里面保存了 token - service 的键值对（弱引用map）
+              onServiceDestroyed(token)
+            }
+          }
+          // 调用原来的逻辑
+          try {
+            if (args == null) {
+              method.invoke(activityManagerInstance)
+            } else {
+              method.invoke(activityManagerInstance, *args)
+            }
+          } catch (invocationException: InvocationTargetException) {
+            throw invocationException.targetException
+          }
+        }
+      }
+    } catch (ignored: Throwable) {
+      SharkLog.d(ignored) { "Could not watch destroyed services" }
+    }
+```
+
+service 的 onDestroy 方法执行后，接下来就执行 ActivityManager 的 serviceDoneExecuting 方法，所以hook这个方法也没问题。
+
+`onServiceDestroyed`这个方法里面，就是监测代码了：
+
+> leakcanary.ServiceWatcher#onServiceDestroyed
+
+```kotlin
+  private fun onServiceDestroyed(token: IBinder) {
+    // 从 map 中取出弱引用来
+    servicesToBeDestroyed.remove(token)?.also { serviceWeakReference ->
+      // 拿到 service
+      serviceWeakReference.get()?.let { service ->
+        // 监测 service
+        reachabilityWatcher.expectWeaklyReachable(
+          service, "${service::class.java.name} received Service#onDestroy() callback"
+        )
+      }
+    }
+  }
+```
 
