@@ -13,11 +13,11 @@ categories: Android
 
 先看[官方文档](https://developer.android.com/topic/performance/graphics/manage-memory)：
 
-> 在Android 3.0之前，Bitmap对象放在Java堆，⽽像素数据是放在Native内存中。如果不⼿动调⽤recycle，Bitmap Native内 存的回收完全依赖finalize函数回调，熟悉Java的同学应该知道，这个时机不太可控。 
+> 在Android 3.0之前，Bitmap对象放在Java堆，⽽像素数据是放在Native内存中。如果不⼿动调⽤recycle，Bitmap Native内存的回收完全依赖finalize函数回调，熟悉Java的同学应该知道，这个时机不太可控。 
 >
 > Android 3.0～Android 7.0将Bitmap对象和像素数据统⼀放到Java堆中，这样就算我们不调⽤recycle，Bitmap内存也会随 着对象⼀起被回收。不过Bitmap是内存消耗的⼤户，把它的内存放到Java堆中似乎不是那么美妙。即使是最新的华为Mate 20，最⼤的Java堆限制也才到512MB，可能我的物理内存还有5GB，但是应⽤还是会因为Java堆内存不⾜导致OOM。 
 >
-> Bitmap放到Java堆的另外⼀个问题会引起⼤量的GC，对系统内存也没有完全利⽤起来。 有没有⼀种实现，可以将Bitmap内存放到Native中，也可以做到和对象⼀起快速释放，同时GC的时候也能考虑这些内存防 ⽌被滥⽤？NativeAllocationRegistry可以⼀次满⾜你这三个要求，Android 8.0正是使⽤这个辅助回收Native内存的机制，来 实现像素数据放到Native内存中。Android 8.0还新增了硬件位图Hardware Bitmap，它可以减少图⽚内存并提升绘制效率。
+> Bitmap放到Java堆的另外⼀个问题会引起⼤量的GC，对系统内存也没有完全利⽤起来。 有没有⼀种实现，可以将Bitmap内存放到Native中，也可以做到和对象⼀起快速释放，同时GC的时候也能考虑这些内存防 ⽌被滥⽤？NativeAllocationRegistry可以⼀次满⾜你这三个要求，Android 8.0正是使⽤这个辅助回收Native内存的机制，来实现像素数据放到Native内存中。Android 8.0还新增了硬件位图Hardware Bitmap，它可以减少图⽚内存并提升绘制效率。
 
 假设我们有这样的一个手机，它的 system/build.prop 配置如下：
 
